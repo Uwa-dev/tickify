@@ -208,6 +208,16 @@ export const getAllMonthlySummaries = async () => {
   }
 };
 
+export const recalculateMonthlySummaries = async() => {
+  try {
+    const response = await api.post('/recalculate-summaries');
+    return response.data;
+  } catch (error) {
+    console.error('API Error:', error.response ? error.response.data : error.message);
+    throw new Error('Failed to recalculate monthly summaries');
+  }
+}
+
 
 
 // Export the axios instance as default if other parts of your app use it directly

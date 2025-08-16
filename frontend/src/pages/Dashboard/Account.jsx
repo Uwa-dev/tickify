@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getAllMonthlySummaries } from '../../services/adminApi'; // Assuming this is the correct path to your service
+// Import the API functions from the separate service file
+import { getAllMonthlySummaries, recalculateMonthlySummaries } from '../../services/adminApi';
 
 // Main App component to fetch and display monthly summaries
 const Account = () => {
@@ -8,6 +9,52 @@ const Account = () => {
   const [summaries, setSummaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Helper function to fetch data
+  const fetchMonthlySummaries = async () => {
+    setLoading(true);
+    try {
+      // Use the imported function to fetch data
+      const response = await getAllMonthlySummaries();
+      
+      // Ensure data is an array before setting state
+      if (response.data && Array.isArray(response.data)) {
+        setSummaries(response.data);
+      } else {
+        // Handle cases where the API response structure is unexpected
+        setError("Invalid data format received from the server.");
+        toast.error("Failed to load monthly summaries due to a data format error.");
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Failed to load monthly summaries:", err);
+      setError(err.message || "Failed to load monthly summaries");
+      setLoading(false);
+      toast.error(err.message || "Failed to load monthly summaries");
+    }
+  };
+
+  // Helper function to handle the recalculation button click
+  const handleRecalculate = async () => {
+    setLoading(true);
+    try {
+      // Use the imported function to trigger recalculation
+      const response = await recalculateMonthlySummaries();
+      // Check for success status from the API response
+      if (response.status) {
+        toast.success(response.message || "Monthly summaries recalculated successfully!");
+        // Re-fetch the data to display the new summaries
+        fetchMonthlySummaries();
+      } else {
+        // Handle server-side errors returned in the response body
+        toast.error(response.message || "Failed to recalculate summaries.");
+        setLoading(false);
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to recalculate summaries.");
+      setLoading(false);
+    }
+  };
 
   // Helper function to format currency for Nigerian Naira
   const formatCurrency = (amount) => {
@@ -23,28 +70,6 @@ const Account = () => {
 
   // useEffect hook to fetch data when the component first mounts
   useEffect(() => {
-    const fetchMonthlySummaries = async () => {
-      try {
-        // Fetch data from your actual API
-        const response = await getAllMonthlySummaries();
-        
-        // Ensure data is an array before setting state
-        if (response.data && Array.isArray(response.data)) {
-          setSummaries(response.data);
-        } else {
-          // Handle cases where the API response structure is unexpected
-          setError("Invalid data format received from the server.");
-          toast.error("Failed to load monthly summaries due to a data format error.");
-        }
-        setLoading(false);
-      } catch (err) {
-        console.error("Failed to load monthly summaries:", err);
-        setError(err.message || "Failed to load monthly summaries");
-        setLoading(false);
-        toast.error(err.message || "Failed to load monthly summaries");
-      }
-    };
-
     fetchMonthlySummaries();
   }, []); // Empty dependency array ensures this runs only once
 
@@ -69,6 +94,9 @@ const Account = () => {
     return (
       <div className="container">
         <p className="no-data-message">No monthly summaries found.</p>
+        <button onClick={handleRecalculate} className="recalculate-button">
+          Recalculate Summaries
+        </button>
       </div>
     );
   }
@@ -77,9 +105,19 @@ const Account = () => {
     <>
       <style jsx="true">{`
         /* Global Styles */
-        
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: #f3f4f6;
+          margin: 0;
+          padding: 0;
+        }
+
         .container {
           padding: 0.4rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-height: 100vh;
         }
 
         .card {
@@ -90,6 +128,7 @@ const Account = () => {
           box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
           padding: 24px;
           box-sizing: border-box;
+          margin-bottom: 1rem;
         }
 
         .title {
@@ -165,7 +204,27 @@ const Account = () => {
           }
         }
 
-        /* Message Styles */
+        /* Button and Message Styles */
+        .recalculate-button {
+          background-color: #4CAF50; /* Green */
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          transition: background-color 0.3s ease;
+        }
+
+        .recalculate-button:hover {
+          background-color: #45a049;
+        }
+        
         .loading-message {
           font-size: 1.25rem;
           color: #4b5563;
@@ -222,6 +281,9 @@ const Account = () => {
             </table>
           </div>
         </div>
+        <button onClick={handleRecalculate} className="recalculate-button">
+          Recalculate Summaries
+        </button>
       </div>
     </>
   );

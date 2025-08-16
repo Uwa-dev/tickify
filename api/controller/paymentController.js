@@ -2,7 +2,7 @@ import Payment from '../models/paymentModel.js';
 import TicketSales from '../models/ticketSalesModel.js';
 import Event from '../models/eventModel.js';
 import Ticket from '../models/ticketModel.js';
-import paystack from '../utils/paystackConfig.js'; // Changed import
+import paystack from '../utils/paystackConfig.js';
 import PromoCode from "../models/promoCodeModel.js";
 import PlatformFee from '../models/platformFeeModel.js';
 
@@ -74,13 +74,23 @@ export const initializePayment = async (req, res) => {
     }
 
     // 5. Calculate and apply platform fee
-    let feeAmount = 0;
+    // Always fetch the platform fee rate first
+    const platformFeeDoc = await PlatformFee.findOne({});
+    const platformFeeRate = platformFeeDoc ? platformFeeDoc.feePercentage : 3;
+
+    let revenueAmount = 0;
+    let feeType;
+
+    // Determine the fee type and calculate the final amount
     if (ticket.transferFee) {
-      const platformFeeDoc = await PlatformFee.findOne({});
-      const feePercentage = platformFeeDoc ? platformFeeDoc.feePercentage : 3;
-      
-      feeAmount = finalAmount * (feePercentage / 100);
-      finalAmount += feeAmount;
+      // Fee is added to the customer's total
+      revenueAmount = finalAmount * (platformFeeRate / 100);
+      finalAmount += revenueAmount;
+      feeType = 'added';
+    } else {
+      // Fee is subtracted from the organizer's total (no change to finalAmount)
+      revenueAmount = finalAmount * (platformFeeRate / 100);
+      feeType = 'subtracted';
     }
     
     // Ensure final amount is not negative
@@ -115,7 +125,7 @@ export const initializePayment = async (req, res) => {
         quantity,
         customTicketUrl,
         promoCode: promoCodeDetails ? promoCodeDetails.code : null,
-        platformFeeCharged: feeAmount, 
+        platformFeeCharged: revenueAmount, 
         transferFeeToGuest: ticket.transferFee,
       },
     });
@@ -141,6 +151,10 @@ export const initializePayment = async (req, res) => {
         quantity,
         customTicketUrl,
         promoCode: promoCode,
+        // Include the fee details in the metadata for verification
+        platformFeeRate: platformFeeRate,
+        feeType: feeType,
+        revenue: revenueAmount,
       },
       callback_url: `${process.env.FRONTEND_URL}/payment/verify?reference=${reference}&customUrl=${customTicketUrl}` 
     });
@@ -191,10 +205,16 @@ export const verifyPayment = async (req, res) => {
     const formattedPaymentMethod = paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1);
     const buyerFullName = metadata.customerName || 'Anonymous';
     const buyerPhoneNumber = verification.data.customer?.phone || metadata.phoneNumber || 'N/A';
+    
+    // Get the required fields from metadata
+    const platformFeeRate = metadata.platformFeeRate;
+    const feeType = metadata.feeType;
+    const revenue = metadata.revenue;
+    const totalAmount = verification.data.amount / 100;
 
     let ticketSaleRecord;
     try {
-      // Attempt to create the TicketSales record
+      // Attempt to create the TicketSales record with the new required fields
       ticketSaleRecord = await TicketSales.create({
         event: metadata.eventId,
         ticket: metadata.ticketId,
@@ -204,23 +224,22 @@ export const verifyPayment = async (req, res) => {
           phoneNumber: buyerPhoneNumber
         },
         quantity: metadata.quantity || 1,
-        unitPrice: verification.data.amount / 100,
-        totalAmount: verification.data.amount / 100,
+        unitPrice: verification.data.amount / 100, // This might not be unit price if quantity > 1
+        totalAmount: totalAmount,
+        revenue: revenue, // Pass the calculated revenue
+        platformFeeRate: platformFeeRate, // Pass the fee rate
+        feeType: feeType, // Pass the fee type
         paymentReference: reference,
         paymentStatus: 'Successful',
         paymentMethod: formattedPaymentMethod,
-        status: 'Paid', // Set status to 'Paid' as per TicketSalesSchema enum
+        status: 'Paid',
         checkInStatus: false
       });
     } catch (error) {
-      // If it's a duplicate key error (code 11000) for paymentReference
       if (error.code === 11000 && error.keyPattern && error.keyPattern.paymentReference === 1) {
         console.warn(`Duplicate key error for paymentReference: ${reference}. Attempting to retrieve existing record.`);
-        // Find the existing document
         ticketSaleRecord = await TicketSales.findOne({ paymentReference: reference });
         if (!ticketSaleRecord) {
-          // This case should ideally not happen if it was a duplicate key error,
-          // but it's a safeguard.
           console.error(`Failed to find existing ticket sale record for ${reference} after duplicate key error.`);
           return res.status(500).json({
             status: false,
@@ -228,24 +247,24 @@ export const verifyPayment = async (req, res) => {
             error: error.message
           });
         }
-        // If found, ensure its status is updated if necessary (e.g., if it was 'Pending' or 'Failed')
         if (ticketSaleRecord.status !== 'Paid' || ticketSaleRecord.paymentStatus !== 'Successful') {
             ticketSaleRecord.status = 'Paid';
             ticketSaleRecord.paymentStatus = 'Successful';
             ticketSaleRecord.paymentMethod = formattedPaymentMethod;
-            ticketSaleRecord.totalAmount = verification.data.amount / 100; // Update total amount in case of retries
+            ticketSaleRecord.totalAmount = totalAmount;
+            ticketSaleRecord.revenue = revenue;
+            ticketSaleRecord.platformFeeRate = platformFeeRate;
+            ticketSaleRecord.feeType = feeType;
             ticketSaleRecord.buyer.fullName = buyerFullName;
             ticketSaleRecord.buyer.email = verification.data.customer?.email || metadata.email;
             ticketSaleRecord.buyer.phoneNumber = buyerPhoneNumber;
-            await ticketSaleRecord.save(); // Save the updates to the existing record
+            await ticketSaleRecord.save();
         }
       } else {
-        // Re-throw other types of errors
         throw error;
       }
     }
 
-    // Update payment record (this should always happen after successful verification)
     const updatedPayment = await Payment.findOneAndUpdate(
       { reference },
       { status: 'successful', updatedAt: new Date() },
@@ -253,8 +272,6 @@ export const verifyPayment = async (req, res) => {
     );
 
     if (!updatedPayment) {
-      // This case should ideally not happen if payment was initialized correctly,
-      // but good to have a fallback.
       console.warn(`Payment record for reference ${reference} not found during update.`);
     }
 
@@ -263,7 +280,7 @@ export const verifyPayment = async (req, res) => {
       message: "Payment verified and ticket issued successfully",
       data: {
         payment: updatedPayment,
-        ticketSale: ticketSaleRecord, // Return the (newly created or updated) record
+        ticketSale: ticketSaleRecord,
         customUrl: metadata.customTicketUrl,
         verification: verification.data
       }
@@ -271,12 +288,11 @@ export const verifyPayment = async (req, res) => {
 
   } catch (error) {
     console.error("Payment verification error:", error);
-    // If the error is a Mongoose validation error, return a more specific message
     if (error.name === 'ValidationError') {
         return res.status(400).json({
             status: false,
             message: "TicketSales validation failed: " + error.message,
-            errors: error.errors // Provide detailed validation errors
+            errors: error.errors
         });
     }
     return res.status(500).json({
@@ -299,7 +315,6 @@ export const checkPaymentStatus = async (req, res) => {
       });
     }
 
-    // Only look for ticket sale if payment was successful
     let ticketSale = null;
     if (payment.status === 'success') {
       ticketSale = await TicketSales.findOne({ paymentReference: reference })
@@ -322,13 +337,11 @@ export const checkPaymentStatus = async (req, res) => {
   }
 };
 
-// Get all ticket sales for a specific event (organizer view)
 export const getEventTicketSales = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { userId } = req.user; // Assuming you have user info from auth middleware
+    const { userId } = req.user;
 
-    // Verify the requesting user is the organizer of this event
     const event = await Event.findOne({
       _id: eventId,
       organizer: userId
@@ -345,7 +358,6 @@ export const getEventTicketSales = async (req, res) => {
       .populate('ticket')
       .sort({ createdAt: -1 });
 
-    // Calculate summary statistics
     const totalSales = ticketSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
     const totalTickets = ticketSales.reduce((sum, sale) => sum + sale.quantity, 0);
 
@@ -374,25 +386,20 @@ export const getEventTicketSales = async (req, res) => {
   }
 };
 
-// Get all ticket sales across active events (admin view)
 export const getAllActiveEventTicketSales = async (req, res) => {
   try {
-    // Get all active events first
     const activeEvents = await Event.find({ status: 'active' })
       .select('_id eventName startDate organizer');
 
-    // Get ticket sales for these events
     const ticketSales = await TicketSales.find({
       event: { $in: activeEvents.map(e => e._id) }
     })
       .populate('event ticket')
       .sort({ createdAt: -1 });
 
-    // Calculate summary statistics
     const totalSales = ticketSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
     const totalTickets = ticketSales.reduce((sum, sale) => sum + sale.quantity, 0);
 
-    // Group by event
     const salesByEvent = activeEvents.map(event => {
       const eventSales = ticketSales.filter(sale => sale.event._id.equals(event._id));
       const eventTotal = eventSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
@@ -430,10 +437,8 @@ export const getAllActiveEventTicketSales = async (req, res) => {
   }
 };
 
-// Get sales analytics (for admin dashboard)
 export const getSalesAnalytics = async (req, res) => {
   try {
-    // Sales by time period
     const salesByMonth = await TicketSales.aggregate([
       {
         $match: {
@@ -453,7 +458,6 @@ export const getSalesAnalytics = async (req, res) => {
       { $sort: { "_id.year": 1, "_id.month": 1 } }
     ]);
 
-    // Top selling events
     const topEvents = await TicketSales.aggregate([
       {
         $match: {

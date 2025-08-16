@@ -21,7 +21,7 @@ import {
 
 import { getTotalPayout, getOrganizerMetrics } from '../controller/payoutController.js';
 
-import { getAllMonthlySummaries } from '../controller/monthlySummaryController.js';
+import { getAllMonthlySummaries, recalculateMonthlySummaries } from '../controller/monthlySummaryController.js';
 
 const adminRouter = express.Router();
 
@@ -39,6 +39,7 @@ adminRouter.get('/monthly-revenue', protect, admin, monthlyRevenue);
 adminRouter.get('/payout', protect, admin, getTotalPayout);
 adminRouter.get('/users/:id/metrics', protect, admin, getOrganizerMetrics)
 adminRouter.get('/accounts', protect, admin, getAllMonthlySummaries)
+adminRouter.post('/recalculate-summaries', protect, admin, recalculateMonthlySummaries);
 
 
 

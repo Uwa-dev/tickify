@@ -38,6 +38,23 @@ const TicketSalesSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    // New field to store the static revenue amount at the time of sale
+    revenue: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    // Added field to account for how the fee was calculated
+    feeType: {
+        type: String,
+        enum: ['subtracted', 'added'],
+        required: true
+    },
+    // Added field to store the platform fee percentage at the time of sale
+    platformFeeRate: {
+        type: Number,
+        required: true,
+    },
     paymentReference: {
         type: String,
         required: true,
