@@ -1,0 +1,185 @@
+.login-div {
+    font-family: var(--normal-font);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: var(--color);
+    background-color: var(--pink-background);
+}
+  
+.login-container, 
+.pay-container{
+    background-color: transparent;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 400px;
+    animation: fadeIn var(--animation-delay) ease-out;
+}
+  
+.login-container h1,
+.pay-container h1 {
+    font-family: var(--h1-font);
+    font-size: var(--h1-font-size);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--color);
+}
+  
+.login-container form,
+.pay-container form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+  
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+  
+.form-group label {
+    font-size: var(--normal-font-size);
+    margin-bottom: 0.5rem;
+    color: var(--color);
+}
+  
+.form-group input {
+    padding: 0.75rem;
+    border: none;
+    border-bottom: 1px solid var(--color);
+    color: var(--color);
+    font-size: var(--normal-font-size);
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+    font-family: inherit;
+    background-color: transparent;
+} 
+
+/* Wrap input and button horizontally */
+.input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.form-group input::placeholder {
+    /* color: rgb(98, 96, 96);  */
+    color: gray;
+    font-size: 14px;
+    font-style: italic; 
+}
+  
+  
+/* Input takes full available width minus button width */
+.input-wrapper input {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-bottom: 1px solid var(--color);
+    background-color: transparent;
+    color: var(--color);
+    font-family: inherit;
+    font-size: var(--normal-font-size);
+    outline: none;
+    margin-bottom: 2px;
+    transition: border-color 0.3s ease-in-out;
+    border-right: none; /* Remove right border for seamless with button */
+}
+  
+  /* Button right beside input */
+.showPasswordIcon {
+    padding: 0.75rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    font-size: var(--normal-font-size);
+}
+
+.input-errors{
+    margin: 0.5rem 0;
+    text-align: center;
+    color: #ca6b6b;
+    font-size: 1rem;
+}
+  
+.form-group input:focus,
+.input-wrapper input:focus{
+    border-color: var(--accent-color);
+}
+
+.input-wrapper:has(input:focus) .showPasswordIcon {
+    border-color: var(--accent-color);
+}
+  
+.login-btn,
+.pay-btn{
+    padding: 0.75rem;
+    background-color: var(--color);
+    color: #ddd;
+    border: none;
+    border-radius: 8px;
+    font-size: var(--normal-font-size);
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+  
+.login-btn:hover,
+.pay-btn:hover{
+    background-color: var(--accent-color);
+}
+  
+.extra-links {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: var(--small-font-size);
+}
+  
+.extra-links .text {
+    color: var(--dark-color);
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+  
+.extra-links .text:hover {
+    color: var(--color);
+}
+
+.error-message{
+    margin: 1rem 0;
+    text-align: center;
+    color: #ca6b6b;
+}
+
+.login-popup-condition{
+    display: flex;
+    align-items: start;
+    gap: 8px;
+    margin-top: -15px;
+}
+
+.login-popup-condition input{
+    margin-top: 5px;
+}
+
+.required-asterisk {
+  color: red;
+  margin-left: 4px;
+}
+
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}

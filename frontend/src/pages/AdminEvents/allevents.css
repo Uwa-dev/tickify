@@ -1,0 +1,379 @@
+
+.events-container{
+    padding: 1.5rem;
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.card-body {
+  padding: 0.75rem;
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table th {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  background-color: #f9fafb;
+}
+
+.data-table td {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Order ID Style */
+.event-link {
+  /* color: #2196F3; */
+  color: var(--accent-color);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Status Badges */
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.status.delivered {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status.processing {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status.shipped {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status.cancelled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.pagination{
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0  0.5rem;
+}
+
+.pagination span {
+  font-size: 1rem;
+  color: #555;
+}
+
+.pagination-btn {
+  font-size: 1rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Optional: Add different colors for better visual feedback */
+.pagination-btn:first-child {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.pagination-btn:last-child {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.clickable-icon {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+.clickable-icon:hover {
+  transform: scale(1.1);
+}
+.banned-icon {
+  color: #dc3545; /* Red for banned */
+}
+.active-icon {
+  color: #28a745; /* Green for active */
+}
+.loading-container, .error-container {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2em;
+  color: #555;
+}
+.error-container {
+  color: #dc3545;
+}
+
+/* AllUsers.css */
+
+/* General container and card styles */
+.users-container {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.users-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+/* Table styles */
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead tr {
+  background-color: #f9fafb;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 24px;
+  text-align: left;
+  font-size: 0.875rem; /* 14px */
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table th {
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+.user-link {
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.user-link:hover {
+  color: #1c4ed8;
+  text-decoration: underline;
+}
+
+/* Ban Icons */
+.ban-icon-cell {
+  cursor: pointer;
+  text-align: center;
+}
+
+.clickable-icon {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.clickable-icon:hover {
+  transform: scale(1.1);
+}
+
+.banned-icon {
+  color: #ef4444; /* Red-500 */
+}
+
+.active-icon {
+  color: #22c55e; /* Green-500 */
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Loading and Error states */
+.loading-container, .error-container {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.25rem;
+  color: #4b5563;
+}
+
+.error-container {
+  color: #ef4444;
+}
+
+/* Custom Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-message {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.modal-confirm-btn, .modal-cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.modal-cancel-btn {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+.modal-confirm-btn.ban {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.modal-confirm-btn.ban:hover {
+  background-color: #dc2626;
+}
+
+.modal-confirm-btn.unban {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.modal-confirm-btn.unban:hover {
+  background-color: #16a34a;
+}

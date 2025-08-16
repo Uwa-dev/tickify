@@ -1,0 +1,19 @@
+.layout-container {
+    display: flex;
+    height: 100vh;
+    background-color: #f8f9fa; /* Light gray background */
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f8f9fa; /* Same as the parent for consistency */
+}
+  

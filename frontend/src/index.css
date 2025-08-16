@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+:root {
+  --color: #ea81b4;
+  --background-color: #2e3192;
+  --pink-background: #FAE5F0;
+  --light-hover: #fbe06b;
+  --accent-color: #a35a7d;
+  --dark-color: #f0a6ca;
+
+  --normal-font: "Outfit", sans-serif;
+
+  --biggest-font-size: 3rem;
+  --h1-font-size: 2.25rem;
+  --h2-font-size: 1.5rem;
+  --h3-font-size: 1.25rem;
+  --normal-font-size: 1rem;
+  --small-font-size: .875rem;
+  --smaller-font-size: .813rem;
+}
+
+@media (max-width: 450px) {
+  :root{
+    --biggest-font-size: 2.5rem;
+    --h1-font-size: 2rem;
+  }
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  font-family: var(--normal-font);
+}
+
+img{
+  width: 100%;
+}
+
+li{
+  list-style: none;
+}
+
+.content{
+  width: 100%;
+}
+
+.app-container{
+  display: flex;
+}
+.content-container{
+  width: 100%;
+}
+
+.all-container{
+  background-color: #F8D9E8;
+}
+
+.scroll-top-icon{
+  background-color: #ddd;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 2rem;
+  right: 1rem;
+}
+
+.allevents-container{
+  padding: 1rem;
+}

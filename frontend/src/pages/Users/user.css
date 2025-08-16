@@ -1,0 +1,156 @@
+.profile-page {
+    min-height: 100vh;
+    background-color: #ddd;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 1024px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 32px;
+    border: 1px solid var(--border-color);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+
+.profile-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--color);
+    display: flex;
+    align-items: center;
+}
+
+.profile-title .icon {
+    height: 32px;
+    width: 32px;
+    margin-right: 12px;
+    color: var(--color);
+}
+
+.back-link {
+    display: flex;
+    align-items: center;
+    color: var(--dark-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--light-hover);
+}
+
+.back-link .back-arrow {
+    height: 20px;
+    width: 20px;
+    margin-right: 4px;
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.section-title .icon {
+    height: 24px;
+    width: 24px;
+    margin-right: 8px;
+    color: var(--accent-color);
+}
+
+.details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+}
+
+.detail-item .icon {
+    height: 20px;
+    width: 20px;
+    color: var(--text-light);
+    margin-right: 12px;
+}
+
+.detail-label {
+    font-weight: 500;
+    color: var(--text-medium);
+    margin-right: 8px;
+}
+
+.detail-value {
+    color: var(--text-dark);
+}
+
+.status-active .icon {
+    color: #22c55e;
+}
+
+.status-active .detail-value {
+    color: #22c55e;
+    font-weight: 700;
+}
+
+.status-banned .icon {
+    color: #ef4444;
+}
+
+.status-banned .detail-value {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.loading-container, .error-container {
+    min-height: 100vh;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.loading-text, .error-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 16px;
+}
+
+.error-text {
+    color: var(--background-color);
+}
+
+@media (min-width: 768px) {
+    .profile-content {
+    grid-template-columns: repeat(2, 1fr);
+    }
+}
