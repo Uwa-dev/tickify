@@ -19,7 +19,7 @@ dotenv.config();
 const app = express();
 connectDB();
 
-const port = 4444;
+const port = process.env.PORT;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

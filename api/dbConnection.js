@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connectDB = async() => {
     try{
     //    await mongoose.connect('mongodb+srv://omoikejoy34:Joyomoike@tickify-free.tt2ftro.mongodb.net/');
-        await mongoose.connect('mongodb://localhost:27017/Tickify');
+        await mongoose.connect(process.env.DB);
        console.log('Connected to Tickify database');
     }catch(error){
         console.log(`Database Connection failed: ${error.message}`);
