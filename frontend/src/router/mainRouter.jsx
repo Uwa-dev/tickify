@@ -44,7 +44,7 @@ const PayoutDetails = lazy(() => import("../pages/Sales/PayoutDetails"));
 const SingleEvents = lazy(() => import("../pages/AdminEvents/SingleEvents"));
 const Account = lazy(() => import("../pages/Dashboard/Account"));
 const NotFound = lazy(() => import("../pages/NotFound/NotFound"))
-
+const QR = lazy(() => import("../pages/QR/QR"));
 const routesConfig = [
   // Public routes (no authentication required)
   {
@@ -330,6 +330,14 @@ const routesConfig = [
         element: (
           <Suspense fallback={<Load />}>
             <Account />
+          </Suspense>
+        )
+      },
+      {
+        path: "/events/qr-code",
+        element: (
+          <Suspense fallback={<Load />}>
+            <QR />
           </Suspense>
         )
       },

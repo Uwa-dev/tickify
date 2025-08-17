@@ -1,14 +1,8 @@
 import mongoose from "mongoose";
-// Make sure to import your models
 import Event from '../models/eventModel.js';
 import TicketSales from '../models/ticketSalesModel.js';
 import Payout from '../models/payoutModel.js';
 
-/**
- * @desc Get aggregated dashboard summary for the authenticated organizer
- * @route GET /api/dashboard/summary
- * @access Private (Organizer)
- */
 export const getOrganizerDashboardSummary = async (req, res) => {
     try {
         const organizerId = req.user.id; // Assuming req.user.id is the organizer's ID
@@ -42,7 +36,17 @@ export const getOrganizerDashboardSummary = async (req, res) => {
                 $group: {
                     _id: null,
                     totalTicketsSold: { $sum: "$quantity" },
-                    totalRevenue: { $sum: "$totalAmount" }
+                    // Sum both the total amount paid and the platform's revenue
+                    totalTicketAmount: { $sum: "$totalAmount" },
+                    platformRevenue: { $sum: "$revenue" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    totalTicketsSold: "$totalTicketsSold",
+                    // Calculate the organizer's revenue by subtracting platform's revenue
+                    totalRevenue: { $subtract: ["$totalTicketAmount", "$platformRevenue"] }
                 }
             }
         ]);

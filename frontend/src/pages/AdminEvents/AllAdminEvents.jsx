@@ -54,40 +54,29 @@ const AllAdminEvents = () => {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      // 1. Fetch all events and the platform fee concurrently
-      const [eventsResponse, platformFeeResponse] = await Promise.all([
-        getAllEvents({ page: pagination.page }),
-        getPlatformFee(),
-      ]);
+      // 1. Fetch all events
+      const eventsResponse = await getAllEvents({ page: pagination.page });
 
       if (eventsResponse.success) {
-        let platformFeePercentage = platformFeeResponse?.feePercentage || 0.03;
-        if (platformFeePercentage > 1) {
-            platformFeePercentage = platformFeePercentage / 100;
-        }
-
         // 2. For each event, fetch its sales summary
         const eventsWithSalesPromises = eventsResponse.data.map(async (event) => {
             try {
+                // Call the API to get the sales data for this specific event
                 const salesSummaryResponse = await getEventSalesSummary(event._id);
                 
-                // Use the data from the sales summary API, correctly referencing the 'totals' object.
-                const ticketsSold = salesSummaryResponse?.totals?.sales || 0;
-                const totalSales = salesSummaryResponse?.totals?.revenue || 0;
-                const platformRevenue = totalSales * platformFeePercentage;
-
                 return {
                     ...event,
-                    ticketsSold,
-                    totalSales,
-                    platformRevenue,
+                    // Use the data from the sales summary API response directly
+                    ticketsSold: salesSummaryResponse?.totals?.sales || 0,
+                    totalSalesGross: salesSummaryResponse?.totals?.totalSalesGross || 0,
+                    platformRevenue: salesSummaryResponse?.totals?.platformRevenue || 0,
                 };
             } catch (salesError) {
                 console.error(`Failed to fetch sales for event ${event._id}:`, salesError);
                 return {
                     ...event,
                     ticketsSold: 0,
-                    totalSales: 0,
+                    totalSalesGross: 0,
                     platformRevenue: 0,
                 };
             }
@@ -130,8 +119,7 @@ const AllAdminEvents = () => {
       const response = await toggleEventPublish(confirmModal.eventId);
       toast.success(response.message);
 
-      // We need to re-fetch to get the most accurate sales numbers
-      // for the published/unpublished event, as ticket sales might change.
+      // Re-fetch to get the updated status and data
       fetchEvents(); 
     } catch (error) {
       toast.error(error.message || "Failed to toggle publish status.");
@@ -164,7 +152,7 @@ const AllAdminEvents = () => {
                     <th>Username</th>
                     <th>Event Status</th>
                     <th>Tickets Sold</th>
-                    <th>Amount</th>
+                    <th>Gross Sales</th>
                     <th>Revenue</th>
                     <th>Publish/Unpublish</th>
                   </tr>
@@ -198,7 +186,7 @@ const AllAdminEvents = () => {
                           </span>
                         </td>
                         <td>{event.ticketsSold}</td>
-                        <td>₦{formatCurrency(event.totalSales)}</td>
+                        <td>₦{formatCurrency(event.totalSalesGross)}</td>
                         <td>₦{formatCurrency(event.platformRevenue)}</td>
                         <td
                           className={event.status === 'ended' ? 'disabled-icon' : ''}

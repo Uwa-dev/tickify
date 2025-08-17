@@ -83,7 +83,6 @@ function Header({ setSidebarOpen, sidebarOpen }) {
     "/regular": "Regular Quests",
     "/admin/users": "All Users",
     "/admin/users-details": "Users Details",
-    "/qr-code": "QR Code",
     "/events/sales/:eventId": "Ticket Sales Summary",
     "/events/ticket/:eventId": "View Tickets",
     "/ticket/:ticketId": "Update Ticket",
@@ -97,7 +96,8 @@ function Header({ setSidebarOpen, sidebarOpen }) {
     "/admin/tools/payouts": "Payouts",
     "/admin/payouts/:payoutId": "Payout Details",
     "/admin/events/:eventId": "Event Details",
-    "/admin/accounts": "Accounts"
+    "/admin/accounts": "Accounts",
+    "/events/qr-code": "QR Code"
   };
 
   const currentTitle = Object.entries(routeTitles).find(([pattern]) =>

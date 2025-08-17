@@ -315,9 +315,9 @@ const Sidebar = ({
 
                 {/* QR Code Link */}
                 <Link
-                  to="/qr-code"
+                  to="/events/qr-code"
                   className={`sidebar-link ${
-                    location.pathname.includes("/qr-code") ? "active" : ""
+                    location.pathname.includes("/events/qr-code") ? "active" : ""
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >

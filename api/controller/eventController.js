@@ -2,6 +2,7 @@ import Event from "../models/eventModel.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import Ticket from "../models/ticketModel.js";
 import mongoose from 'mongoose';
+import qrcode from 'qrcode';
 
 
 export const createEvent = async (req, res) => {
@@ -569,6 +570,57 @@ export const toggleEventPublishStatus = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export const generateQRCode = async (req, res) => {
+  // Use eventId for a robust database lookup
+  const { eventId, qrReason } = req.body; 
+
+  // 1. Check for the required 'eventId' field
+  if (!eventId) {
+    return res.status(400).json({ error: "Missing required 'eventId' field in the request body." });
+  }
+
+  try {
+    // 2. Look up the event in the database using its unique _id
+    // This will find the document regardless of the name format
+    const event = await Event.findById(eventId); 
+
+    // 3. If the event is not found, return a 404 Not Found error
+    if (!event) {
+      return res.status(404).json({ error: `Event with ID '${eventId}' not found.` });
+    }
+
+    const BASE_URL = 'http://localhost:4444'
+
+    // 4. Construct the full URL using the event's custom URL
+    const fullUrl = `${BASE_URL}/${event.customTicketUrl}`;
+
+    console.log(`Generating QR code for event '${event.eventName}', URL: ${fullUrl}`);
+    
+    // 5. Generate the QR code as a data URL (base64 encoded string)
+    const qrCodeDataUrl = await qrcode.toDataURL(fullUrl, {
+      width: 250, // The width of the QR code in pixels
+      margin: 2,  // The margin around the QR code
+    });
+
+    // 6. Extract the base64 part and convert it to a Buffer
+    const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, "");
+    const imageBuffer = Buffer.from(base64Data, 'base64');
+
+    // 7. Set the appropriate HTTP headers for an image response
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Disposition', 'inline; filename="qrcode.png"');
+    res.setHeader('Cache-Control', 'no-cache');
+
+    // 8. Send the image buffer as the response
+    res.send(imageBuffer);
+    
+  } catch (err) {
+    console.error('Error generating QR code:', err);
+    // Return a 500 Internal Server Error status and a JSON error message
+    res.status(500).json({ error: 'Failed to generate QR code.' });
+  }
 };
 
 

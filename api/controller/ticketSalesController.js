@@ -69,6 +69,126 @@ export const processPaystackPayment = async (req, res) => {
   }
 };
 
+// export const getSalesSummary = async (req, res) => {
+//   try {
+//     const { eventId } = req.params;
+    
+//     // Validate eventId format
+//     if (!mongoose.Types.ObjectId.isValid(eventId)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid event ID format"
+//       });
+//     }
+
+//     // Get event with tickets
+//     const event = await Event.findById(eventId)
+//       .populate('tickets')
+//       .lean();
+    
+//     if (!event) {
+//       return res.status(404).json({ 
+//         success: false, 
+//         message: "Event not found" 
+//       });
+//     }
+
+//     // Get all successful ticket sales for this event
+//     const ticketSales = await TicketSales.find({
+//       event: eventId,
+//       paymentStatus: 'Successful'
+//     })
+//     .populate({
+//       path: 'ticket',
+//       select: 'ticketType price quantity'
+//     })
+//     .sort({ createdAt: -1 });
+
+//     // Create summary by ticket type
+//     const summary = event.tickets.map(ticket => {
+//       const salesForTicket = ticketSales.filter(sale => 
+//         sale.ticket && sale.ticket._id.toString() === ticket._id.toString()
+//       );
+      
+//       const sold = salesForTicket.reduce((sum, sale) => sum + (sale.quantity || 0), 0);
+//       const available = Math.max((ticket.quantity || 0) - sold, 0);
+      
+//       return {
+//         _id: ticket._id,
+//         ticketType: ticket.ticketType || 'General Admission',
+//         price: ticket.price || 0,
+//         quantity: ticket.quantity || 0,
+//         sold: sold,
+//         available: available,
+//         revenue: salesForTicket.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0)
+//       };
+//     });
+
+//     // Format attendees data
+//     const formattedAttendees = ticketSales.map(sale => ({
+//       _id: sale._id,
+//       buyer: {
+//         fullName: sale.buyer?.fullName || 'Anonymous',
+//         email: sale.buyer?.email || 'no-email@example.com',
+//         phoneNumber: sale.buyer?.phoneNumber || ''
+//       },
+//       ticket: {
+//         _id: sale.ticket?._id || null,
+//         ticketType: sale.ticket?.ticketType || 'Unknown',
+//         price: sale.ticket?.price || 0
+//       },
+//       quantity: sale.quantity || 0,
+//       unitPrice: sale.unitPrice || 0,
+//       totalAmount: sale.totalAmount || 0,
+//       paymentMethod: sale.paymentMethod || 'Unknown',
+//       paymentReference: sale.paymentReference || '',
+//       purchaseDate: sale.createdAt,
+//       checkInStatus: sale.checkInStatus || false,
+//       checkInTime: sale.checkInTime || null
+//     }));
+
+//     // Calculate totals
+//     const totals = {
+//       sales: summary.reduce((sum, ticket) => sum + ticket.sold, 0),
+//       revenue: summary.reduce((sum, ticket) => sum + ticket.revenue, 0),
+//       available: summary.reduce((sum, ticket) => sum + ticket.available, 0)
+//     };
+
+//     res.status(200).json({
+//       success: true,
+//       event: {
+//         _id: event._id,
+//         eventName: event.eventName,
+//         startDate: event.startDate,
+//         endDate: event.endDate,
+//         location: event.location,
+//         tickets: event.tickets.map(t => ({
+//           _id: t._id,
+//           ticketType: t.ticketType,
+//           price: t.price,
+//           quantity: t.quantity
+//         }))
+//       },
+//       ticketSummary: summary,
+//       attendees: formattedAttendees,
+//       totals
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching sales summary:", {
+//       error: error.message,
+//       stack: error.stack,
+//       eventId
+//     });
+    
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching sales summary",
+//       error: process.env.NODE_ENV === 'development' ? error.message : undefined
+//     });
+//   }
+// };
+
 export const getSalesSummary = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -140,6 +260,9 @@ export const getSalesSummary = async (req, res) => {
       quantity: sale.quantity || 0,
       unitPrice: sale.unitPrice || 0,
       totalAmount: sale.totalAmount || 0,
+      revenue: sale.revenue || 0, // Now includes the individual sale revenue
+      platformFeeRate: sale.platformFeeRate || 0, // Now includes the platform fee rate
+      feeType: sale.feeType || 'N/A', // Now includes the fee type
       paymentMethod: sale.paymentMethod || 'Unknown',
       paymentReference: sale.paymentReference || '',
       purchaseDate: sale.createdAt,
@@ -149,8 +272,12 @@ export const getSalesSummary = async (req, res) => {
 
     // Calculate totals
     const totals = {
-      sales: summary.reduce((sum, ticket) => sum + ticket.sold, 0),
-      revenue: summary.reduce((sum, ticket) => sum + ticket.revenue, 0),
+      // Sum the totalAmount for gross sales
+      totalSalesGross: ticketSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0),
+      // Sum the revenue field for platform revenue
+      platformRevenue: ticketSales.reduce((sum, sale) => sum + (sale.revenue || 0), 0),
+      // Sum the tickets sold
+      sales: ticketSales.reduce((sum, sale) => sum + (sale.quantity || 0), 0),
       available: summary.reduce((sum, ticket) => sum + ticket.available, 0)
     };
 
@@ -323,15 +450,8 @@ export const totalRevenueToday = async (req, res) => {
 
     const endOfToday = new Date();
     endOfToday.setHours(23, 59, 59, 999);
-
-    // 2. Fetch the current platform fee percentage.
-    // We'll get the most recent one if multiple exist, or use a default if none are found.
-    const platformFeeDoc = await PlatformFee.findOne().sort({
-      createdAt: -1
-    });
-    const feePercentage = platformFeeDoc ? platformFeeDoc.feePercentage : 3.0; // Use 3.0 as a fallback
-
-    // 3. Use the aggregation pipeline to calculate the total amount from all successful sales today
+    
+    // 2. Use the aggregation pipeline to sum the 'revenue' field
     const aggregationResult = await TicketSales.aggregate([{
       $match: {
         createdAt: {
@@ -343,27 +463,25 @@ export const totalRevenueToday = async (req, res) => {
     }, {
       $group: {
         _id: null, // Group all matching documents together
-        totalSales: {
-          $sum: "$totalAmount"
-        }, // Sum the 'totalAmount' field
+        totalRevenue: {
+          $sum: "$revenue"
+        }, // Sum the 'revenue' field directly
       },
     }, ]);
 
-    // 4. Calculate the total platform revenue
+    // 3. Get the total revenue from the aggregation result
     let totalRevenue = 0;
     if (aggregationResult.length > 0) {
-      const totalSalesToday = aggregationResult[0].totalSales;
-      totalRevenue = totalSalesToday * (feePercentage / 100);
+      totalRevenue = aggregationResult[0].totalRevenue;
     }
 
-    // 5. Send the total revenue back in the response
+    // 4. Send the total revenue back in the response
     res.status(200).json({
       success: true,
       totalRevenue,
-      feePercentage,
     });
   } catch (error) {
-    // 6. Handle any potential errors
+    // 5. Handle any potential errors
     console.error("Error fetching today's revenue:", error);
     res.status(500).json({
       success: false,
@@ -389,14 +507,7 @@ export const monthlyRevenue = async (req, res) => {
     const startOfMonth = new Date(targetYear, targetMonth, 1);
     const endOfMonth = new Date(targetYear, targetMonth + 1, 0);
 
-    // 3. Fetch the current platform fee percentage.
-    // We'll get the most recent one if multiple exist, or use a default if none are found.
-    const platformFeeDoc = await PlatformFee.findOne().sort({
-      createdAt: -1
-    });
-    const feePercentage = platformFeeDoc ? platformFeeDoc.feePercentage : 3.0; // Use 3.0 as a fallback
-
-    // 4. Use the aggregation pipeline to calculate the total amount from all successful sales that month
+    // 3. Use the aggregation pipeline to sum the 'revenue' field for the month
     const aggregationResult = await TicketSales.aggregate([{
       $match: {
         createdAt: {
@@ -408,29 +519,27 @@ export const monthlyRevenue = async (req, res) => {
     }, {
       $group: {
         _id: null, // Group all matching documents together
-        totalSales: {
-          $sum: "$totalAmount"
-        }, // Sum the 'totalAmount' field
+        totalRevenue: {
+          $sum: "$revenue"
+        }, // Sum the 'revenue' field directly
       },
     }, ]);
 
-    // 5. Calculate the total platform revenue
+    // 4. Get the total revenue from the aggregation result
     let totalRevenue = 0;
     if (aggregationResult.length > 0) {
-      const totalSalesThisMonth = aggregationResult[0].totalSales;
-      totalRevenue = totalSalesThisMonth * (feePercentage / 100);
+      totalRevenue = aggregationResult[0].totalRevenue;
     }
 
-    // 6. Send the total revenue back in the response
+    // 5. Send the total revenue back in the response
     res.status(200).json({
       success: true,
       totalRevenue,
-      feePercentage,
       month: targetMonth + 1, // Send back the 1-indexed month
       year: targetYear
     });
   } catch (error) {
-    // 7. Handle any potential errors
+    // 6. Handle any potential errors
     console.error("Error fetching monthly revenue:", error);
     res.status(500).json({
       success: false,

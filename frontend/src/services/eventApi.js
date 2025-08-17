@@ -115,6 +115,18 @@ export const toggleEventPublish = async (eventId) => {
   }
 };
 
+export const generateQRCode = async(qrData) => {
+  try {
+    const response = await eventApi.post('/generate-qr', qrData);
+    return response.data;
+  } catch (error) {
+    console.error("Error generating QR Code:", error);
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to generate QR Code"
+    );
+  }
+}
+
 
 // Delete a finished event
 export const deleteFinishedEvent = async (id) => {

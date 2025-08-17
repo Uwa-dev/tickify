@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { getEventById } from '../../services/eventApi';
 import { getPlatformFee } from '../../services/adminApi';
-import { getEventSalesSummary } from '../../services/ticketApi';
+import { getEventSalesSummary } from '../../services/ticketApi'; // Renamed to reflect backend function
 
 const SingleEvents = () => {
   const { eventId } = useParams();
@@ -58,33 +58,19 @@ const SingleEvents = () => {
         // Fetch all necessary data
         const [eventDetails, salesSummaryData, platformFeeData] = await Promise.all([
           getEventById(eventId),
-          getEventSalesSummary(eventId),
+          getEventSalesSummary(eventId), // Use the getSalesSummary function
           getPlatformFee(),
         ]);
-        
-        // Use the totals object from the sales summary data
-        const totalTicketsSold = salesSummaryData.totals?.sales || 0;
-        const totalSalesGross = salesSummaryData.totals?.revenue || 0;
-        
-        // Correctly handle the platform fee percentage.
-        let platformFeePercentage = platformFeeData.feePercentage || 0.03;
-        if (platformFeePercentage > 1) {
-            platformFeePercentage = platformFeePercentage / 100;
-        }
-        
-        // This is the key change: "Total Revenue" is now defined as the platform's revenue (the fee).
-        const platformRevenue = totalSalesGross * platformFeePercentage;
         
         const combinedData = {
           ...eventDetails,
           ...salesSummaryData.event,
           totals: {
-            sales: totalTicketsSold,
-            totalSalesGross: totalSalesGross,
-            // Pass the platform's revenue to the component state
-            platformRevenue: platformRevenue,
+            sales: salesSummaryData.totals?.sales || 0,
+            totalSalesGross: salesSummaryData.totals?.totalSalesGross || 0,
+            platformRevenue: salesSummaryData.totals?.platformRevenue || 0,
           },
-          platformFeePercentage,
+          platformFeePercentage: platformFeeData.feePercentage || 0,
           organizerName: eventDetails.organizer?.username || 'Unknown Organizer',
         };
         
@@ -444,7 +430,7 @@ const SingleEvents = () => {
                     <DollarSign size={20} color={colors.info} />
                   </div>
                   <div className="info-text">
-                    <div className="info-label">Total Sales</div>
+                    <div className="info-label">Total Gross Sales</div>
                     <div className="info-value">{formatCurrency(eventData.totals.totalSalesGross)}</div>
                   </div>
                 </div>
@@ -453,7 +439,7 @@ const SingleEvents = () => {
                     <DollarSign size={20} color={colors.success} />
                   </div>
                   <div className="info-text">
-                    <div className="info-label">Total Revenue</div>
+                    <div className="info-label">Platform Revenue</div>
                     <div className="info-value">{formatCurrency(eventData.totals.platformRevenue)}</div>
                   </div>
                 </div>
