@@ -223,7 +223,7 @@ const Sidebar = ({
                   <button
                     onClick={() => setContentOpen(!contentOpen)}
                     className={`dropdown-button ${
-                      location.pathname.includes("/events") ? "active" : ""
+                      location.pathname.includes("/events") && !location.pathname.includes("/events/qr-code")? "active" : ""
                     }`}
                   >
                     <CalendarRange className="icon"/>

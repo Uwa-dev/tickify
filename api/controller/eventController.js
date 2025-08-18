@@ -492,6 +492,40 @@ export const updateEvent = async (req, res) => {
   }
 };
 
+export const allFutureEvents = async (req, res) => {
+  try {
+    const currentDate = new Date();
+
+    const events = await Event.find({
+      isPublished: true,
+      status: 'active',
+      adminUnpublished: false, // Ensure it's not manually unpublished by an admin
+      startDate: { $gte: currentDate },
+    }).sort({ startDate: 1 }); // Sort by start date to show upcoming events first
+
+    // If no events are found, return a 200 OK with an empty array
+    if (!events || events.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    // If events are found, send a successful response
+    res.status(200).json({
+      success: true,
+      data: events,
+    });
+  } catch (error) {
+    console.error("Error fetching future events:", error);
+    res.status(500).json({
+      success: false,
+      message: "An internal server error occurred.",
+      error: error.message,
+    });
+  }
+};
+
 export const toggleEventPublishStatus = async (req, res) => {
     try {
         const { eventId } = req.params;
@@ -583,7 +617,6 @@ export const generateQRCode = async (req, res) => {
 
   try {
     // 2. Look up the event in the database using its unique _id
-    // This will find the document regardless of the name format
     const event = await Event.findById(eventId); 
 
     // 3. If the event is not found, return a 404 Not Found error
@@ -591,30 +624,32 @@ export const generateQRCode = async (req, res) => {
       return res.status(404).json({ error: `Event with ID '${eventId}' not found.` });
     }
 
-    const BASE_URL = 'http://localhost:4444'
+    const BASE_URL = 'http://localhost:4444';
+    let fullUrl;
 
-    // 4. Construct the full URL using the event's custom URL
-    const fullUrl = `${BASE_URL}/${event.customTicketUrl}`;
-
-    console.log(`Generating QR code for event '${event.eventName}', URL: ${fullUrl}`);
+    // 4. Check the qrReason to determine the correct URL.
+    if (qrReason === 'check-in') {
+        fullUrl = `${BASE_URL}/events/check-in/${event._id}`;
+        console.log(`Generating check-in QR code for event '${event.eventName}', URL: ${fullUrl}`);
+    } else {
+        fullUrl = `${BASE_URL}/${event.customTicketUrl}`;
+        console.log(`Generating ticket QR code for event '${event.eventName}', URL: ${fullUrl}`);
+    }
     
-    // 5. Generate the QR code as a data URL (base64 encoded string)
+    // 5. Generate the QR code as a data URL (base64 encoded string).
+    // The toDataURL method already does this for us.
     const qrCodeDataUrl = await qrcode.toDataURL(fullUrl, {
-      width: 250, // The width of the QR code in pixels
-      margin: 2,  // The margin around the QR code
+      width: 250, 
+      margin: 2,  
     });
 
-    // 6. Extract the base64 part and convert it to a Buffer
-    const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, "");
-    const imageBuffer = Buffer.from(base64Data, 'base64');
-
-    // 7. Set the appropriate HTTP headers for an image response
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Disposition', 'inline; filename="qrcode.png"');
-    res.setHeader('Cache-Control', 'no-cache');
-
-    // 8. Send the image buffer as the response
-    res.send(imageBuffer);
+    // 6. Send the base64 data URL directly to the frontend.
+    // The `data:image/png;base64,...` prefix is crucial for the frontend.
+    res.status(200).json({
+        success: true,
+        message: "QR code generated successfully.",
+        qrCodeDataUrl: qrCodeDataUrl
+    });
     
   } catch (err) {
     console.error('Error generating QR code:', err);
@@ -629,199 +664,167 @@ export const generateQRCode = async (req, res) => {
 
 
 // Delete a finished event
-export const deleteFinishedEvent = async (req, res) => {
-  try {
-    const { id } = req.params; // Event ID from URL parameters
-    const event = await Event.findById(id);
+// export const deleteFinishedEvent = async (req, res) => {
+//   try {
+//     const { id } = req.params; // Event ID from URL parameters
+//     const event = await Event.findById(id);
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+//     if (!event) {
+//       return res.status(404).json({ error: "Event not found" });
+//     }
 
-    if (event.date >= new Date()) {
-      return res
-        .status(400)
-        .json({ error: "Cannot delete an ongoing or upcoming event" });
-    }
+//     if (event.date >= new Date()) {
+//       return res
+//         .status(400)
+//         .json({ error: "Cannot delete an ongoing or upcoming event" });
+//     }
 
-    await event.remove();
-    res.status(200).json({ message: "Event deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error deleting event: " + error.message });
-  }
-};
+//     await event.remove();
+//     res.status(200).json({ message: "Event deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Error deleting event: " + error.message });
+//   }
+// };
 
-// View all published events by a user/organizer
-export const getPublishedEventsByOrganizer = async (req, res) => {
-  try {
-    const organizer = req.user.id; // Assuming `req.user.id` contains the authenticated user's ID
-    const events = await Event.find({ organizer, date: { $gte: new Date() } }); // Future events only
-    res.status(200).json(events);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching events: " + error.message });
-  }
-};
+// // View all published events by a user/organizer
+// export const getPublishedEventsByOrganizer = async (req, res) => {
+//   try {
+//     const organizer = req.user.id; // Assuming `req.user.id` contains the authenticated user's ID
+//     const events = await Event.find({ organizer, date: { $gte: new Date() } }); // Future events only
+//     res.status(200).json(events);
+//   } catch (error) {
+//     res.status(500).json({ error: "Error fetching events: " + error.message });
+//   }
+// };
 
-// Delete a published event that hasn't sold any tickets
-export const deleteUnsoldPublishedEvent = async (req, res) => {
-  try {
-    const { id } = req.params; // Event ID from URL parameters
-    const event = await Event.findById(id);
+// // Delete a published event that hasn't sold any tickets
+// export const deleteUnsoldPublishedEvent = async (req, res) => {
+//   try {
+//     const { id } = req.params; // Event ID from URL parameters
+//     const event = await Event.findById(id);
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+//     if (!event) {
+//       return res.status(404).json({ error: "Event not found" });
+//     }
 
-    // Check if the event is published (future date) and has no tickets sold
-    if (event.date < new Date()) {
-      return res
-        .status(400)
-        .json({ error: "Event is not published (already finished)." });
-    }
+//     // Check if the event is published (future date) and has no tickets sold
+//     if (event.date < new Date()) {
+//       return res
+//         .status(400)
+//         .json({ error: "Event is not published (already finished)." });
+//     }
 
-    if (event.soldTickets > 0) {
-      return res
-        .status(400)
-        .json({ error: "Cannot delete an event that has sold tickets." });
-    }
+//     if (event.soldTickets > 0) {
+//       return res
+//         .status(400)
+//         .json({ error: "Cannot delete an event that has sold tickets." });
+//     }
 
-    // Delete the event
-    await event.remove();
-    res.status(200).json({ message: "Event deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error deleting event: " + error.message });
-  }
-};
+//     // Delete the event
+//     await event.remove();
+//     res.status(200).json({ message: "Event deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Error deleting event: " + error.message });
+//   }
+// };
 
-export const getEventWithOrganizerDetails = async (req, res) => {
-  try {
-    const { id } = req.params;
+// export const getEventWithOrganizerDetails = async (req, res) => {
+//   try {
+//     const { id } = req.params;
 
-    // Find the event and populate the organizer's account details
-    const event = await Event.findById(id).populate({
-      path: "organizer",
-      select: "username email accountDetails",
-    });
+//     // Find the event and populate the organizer's account details
+//     const event = await Event.findById(id).populate({
+//       path: "organizer",
+//       select: "username email accountDetails",
+//     });
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+//     if (!event) {
+//       return res.status(404).json({ error: "Event not found" });
+//     }
 
-    res.status(200).json({
-      message: "Event retrieved successfully",
-      event,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Error retrieving event: " + error.message });
-  }
-};
+//     res.status(200).json({
+//       message: "Event retrieved successfully",
+//       event,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Error retrieving event: " + error.message });
+//   }
+// };
 
-// Search Events
-export const searchEvents = async (req, res) => {
-  try {
-    const { keyword, date, location } = req.query;
+// // Search Events
+// export const searchEvents = async (req, res) => {
+//   try {
+//     const { keyword, date, location } = req.query;
 
-    const query = {};
-    if (keyword) query.eventName = { $regex: keyword, $options: "i" };
-    if (date) query.date = new Date(date);
-    if (location) query.location = { $regex: location, $options: "i" };
+//     const query = {};
+//     if (keyword) query.eventName = { $regex: keyword, $options: "i" };
+//     if (date) query.date = new Date(date);
+//     if (location) query.location = { $regex: location, $options: "i" };
 
-    const events = await Event.find(query);
-    res.status(200).json(events);
-  } catch (error) {
-    res.status(500).json({ error: "Error searching events: " + error.message });
-  }
-};
+//     const events = await Event.find(query);
+//     res.status(200).json(events);
+//   } catch (error) {
+//     res.status(500).json({ error: "Error searching events: " + error.message });
+//   }
+// };
 
-export const allFutureEvents = async (req, res) => {
-  try {
-    const currentDate = new Date();
-
-    const events = await Event.find({
-      isPublished: true,
-      status: 'active',
-      adminUnpublished: false, // Ensure it's not manually unpublished by an admin
-      startDate: { $gte: currentDate },
-    }).sort({ startDate: 1 }); // Sort by start date to show upcoming events first
-
-    // If no events are found, return a 200 OK with an empty array
-    if (!events || events.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: [],
-      });
-    }
-
-    // If events are found, send a successful response
-    res.status(200).json({
-      success: true,
-      data: events,
-    });
-  } catch (error) {
-    console.error("Error fetching future events:", error);
-    res.status(500).json({
-      success: false,
-      message: "An internal server error occurred.",
-      error: error.message,
-    });
-  }
-};
+// 
 
 
 
-// Get Events by Category
-export const getEventsByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
-    const events = await Event.find({ eventType: category });
-    res.status(200).json(events);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching events: " + error.message });
-  }
-};
+// // Get Events by Category
+// export const getEventsByCategory = async (req, res) => {
+//   try {
+//     const { category } = req.params;
+//     const events = await Event.find({ eventType: category });
+//     res.status(200).json(events);
+//   } catch (error) {
+//     res.status(500).json({ error: "Error fetching events: " + error.message });
+//   }
+// };
 
-// Stop Events from Selling Tickets
-export const stopTicketSales = async (req, res) => {
-  try {
-    const { eventId } = req.params;
-    const event = await Event.findById(eventId);
+// // Stop Events from Selling Tickets
+// export const stopTicketSales = async (req, res) => {
+//   try {
+//     const { eventId } = req.params;
+//     const event = await Event.findById(eventId);
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+//     if (!event) {
+//       return res.status(404).json({ error: "Event not found" });
+//     }
 
-    event.isSalesStopped = true;
-    await event.save();
+//     event.isSalesStopped = true;
+//     await event.save();
 
-    res.status(200).json({ message: "Event sales stopped successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error stopping sales: " + error.message });
-  }
-};
+//     res.status(200).json({ message: "Event sales stopped successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Error stopping sales: " + error.message });
+//   }
+// };
 
-export const saveEventData = async (req, res) => {
-  try {
-    const { eventId, ...stepData } = req.body;
+// export const saveEventData = async (req, res) => {
+//   try {
+//     const { eventId, ...stepData } = req.body;
 
-    if (!eventId) {
-      return res.status(400).json({ error: "Event ID is required" });
-    }
+//     if (!eventId) {
+//       return res.status(400).json({ error: "Event ID is required" });
+//     }
 
-    // Find and update the event
-    const event = await Event.findByIdAndUpdate(
-      eventId,
-      { $set: stepData },
-      { new: true, upsert: false } // Prevent creating new event if not found
-    );
+//     // Find and update the event
+//     const event = await Event.findByIdAndUpdate(
+//       eventId,
+//       { $set: stepData },
+//       { new: true, upsert: false } // Prevent creating new event if not found
+//     );
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+//     if (!event) {
+//       return res.status(404).json({ error: "Event not found" });
+//     }
 
-    res.status(200).json({ message: "Step data saved successfully", event });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to save data: " + error.message });
-  }
-};
+//     res.status(200).json({ message: "Step data saved successfully", event });
+//   } catch (error) {
+//     res.status(500).json({ error: "Failed to save data: " + error.message });
+//   }
+// };
 
 

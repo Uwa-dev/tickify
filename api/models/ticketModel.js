@@ -30,10 +30,6 @@ const ticketSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // NEW FIELD: indicates if the fee is passed to the guest
     },
-    promoCode: {
-      type: String, // Promo code used for this ticket
-      uppercase: true,
-    },
     isCheckedIn: {
       type: Boolean,
       default: false, // Indicates if the ticket has been checked in

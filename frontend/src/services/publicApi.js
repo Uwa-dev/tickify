@@ -39,3 +39,12 @@ export const validatePromoCode = async (eventId, code, ticketIds) => {
     throw error.response?.data || error;
   }
 };
+
+export const checkIn = async( eventId, email) => {
+  try {
+    const response = await publicApi.patch(`/check-in/${eventId}`, { eventId, email});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

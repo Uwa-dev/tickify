@@ -11,12 +11,35 @@ const generateUniqueCode = () => uuidv4();
 
 export const createTicket = async (req, res) => {
   try {
-    const { eventId, ticketType, price, quantity, promoCode } = req.body;
+    const { eventId, ticketType, price, quantity, transferFee } = req.body;
 
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }
+
+    // Fetch the current platform fee percentage from the database
+    // Assuming there is only one PlatformFee document.
+    const platformFeeDoc = await PlatformFee.findOne({});
+    const platformFeePercentage = platformFeeDoc ? platformFeeDoc.feePercentage / 100 : 0.03; // Default to 3% if not found
+
+    let finalPrice;
+    let serviceFee;
+
+    // Calculate the service fee amount
+    serviceFee = parseFloat(price) * platformFeePercentage;
+    
+    if (transferFee) {
+      // Fee is passed to the customer (guest)
+      finalPrice = parseFloat(price) + serviceFee;
+    } else {
+      // Fee is taken from the ticket price (organizer)
+      finalPrice = parseFloat(price); // The customer still pays the base price
+    }
+    
+    // Ensure both are rounded to two decimal places
+    finalPrice = parseFloat(finalPrice.toFixed(2));
+    serviceFee = parseFloat(serviceFee.toFixed(2));
 
     const uniqueCode = generateUniqueCode();
 
@@ -25,8 +48,10 @@ export const createTicket = async (req, res) => {
       ticketType,
       price,
       quantity: quantity === 'Unlimited' ? Number.MAX_SAFE_INTEGER : quantity,
-      promoCode,
       uniqueCode,
+      finalPrice,   // New calculated field
+      serviceFee,   // New field for financial records
+      transferFee,  // Save the boolean value for record-keeping
     });
 
     await newTicket.save();
@@ -38,6 +63,7 @@ export const createTicket = async (req, res) => {
 
     res.status(201).json({ message: "Ticket created successfully", ticket: newTicket });
   } catch (error) {
+    console.error("Error creating ticket:", error);
     res.status(500).json({ error: "Error creating ticket: " + error.message });
   }
 };

@@ -13,8 +13,6 @@ export const processPaystackPayment = async (req, res) => {
   try {
     const { reference, eventId, ticketId, buyerDetails, quantity, unitPrice, totalAmount } = req.body;
 
-    // --- FIX FOR 'INVALID KEY' ERROR ---
-    // Ensure the secret key is defined before making the API call
     if (!process.env.PAYSTACK_SECRET_KEY) {
       console.error("Paystack secret key is not defined in environment variables.");
       return res.status(500).json({
@@ -27,7 +25,6 @@ export const processPaystackPayment = async (req, res) => {
     const paystackVerification = await paystack.transaction.verify(reference);
     
     if (paystackVerification.data.status === 'success') {
-      // Payment is successful, now save the ticket sale to the database
       const newSale = new TicketSales({
         event: eventId,
         ticket: ticketId,
@@ -68,126 +65,6 @@ export const processPaystackPayment = async (req, res) => {
     });
   }
 };
-
-// export const getSalesSummary = async (req, res) => {
-//   try {
-//     const { eventId } = req.params;
-    
-//     // Validate eventId format
-//     if (!mongoose.Types.ObjectId.isValid(eventId)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid event ID format"
-//       });
-//     }
-
-//     // Get event with tickets
-//     const event = await Event.findById(eventId)
-//       .populate('tickets')
-//       .lean();
-    
-//     if (!event) {
-//       return res.status(404).json({ 
-//         success: false, 
-//         message: "Event not found" 
-//       });
-//     }
-
-//     // Get all successful ticket sales for this event
-//     const ticketSales = await TicketSales.find({
-//       event: eventId,
-//       paymentStatus: 'Successful'
-//     })
-//     .populate({
-//       path: 'ticket',
-//       select: 'ticketType price quantity'
-//     })
-//     .sort({ createdAt: -1 });
-
-//     // Create summary by ticket type
-//     const summary = event.tickets.map(ticket => {
-//       const salesForTicket = ticketSales.filter(sale => 
-//         sale.ticket && sale.ticket._id.toString() === ticket._id.toString()
-//       );
-      
-//       const sold = salesForTicket.reduce((sum, sale) => sum + (sale.quantity || 0), 0);
-//       const available = Math.max((ticket.quantity || 0) - sold, 0);
-      
-//       return {
-//         _id: ticket._id,
-//         ticketType: ticket.ticketType || 'General Admission',
-//         price: ticket.price || 0,
-//         quantity: ticket.quantity || 0,
-//         sold: sold,
-//         available: available,
-//         revenue: salesForTicket.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0)
-//       };
-//     });
-
-//     // Format attendees data
-//     const formattedAttendees = ticketSales.map(sale => ({
-//       _id: sale._id,
-//       buyer: {
-//         fullName: sale.buyer?.fullName || 'Anonymous',
-//         email: sale.buyer?.email || 'no-email@example.com',
-//         phoneNumber: sale.buyer?.phoneNumber || ''
-//       },
-//       ticket: {
-//         _id: sale.ticket?._id || null,
-//         ticketType: sale.ticket?.ticketType || 'Unknown',
-//         price: sale.ticket?.price || 0
-//       },
-//       quantity: sale.quantity || 0,
-//       unitPrice: sale.unitPrice || 0,
-//       totalAmount: sale.totalAmount || 0,
-//       paymentMethod: sale.paymentMethod || 'Unknown',
-//       paymentReference: sale.paymentReference || '',
-//       purchaseDate: sale.createdAt,
-//       checkInStatus: sale.checkInStatus || false,
-//       checkInTime: sale.checkInTime || null
-//     }));
-
-//     // Calculate totals
-//     const totals = {
-//       sales: summary.reduce((sum, ticket) => sum + ticket.sold, 0),
-//       revenue: summary.reduce((sum, ticket) => sum + ticket.revenue, 0),
-//       available: summary.reduce((sum, ticket) => sum + ticket.available, 0)
-//     };
-
-//     res.status(200).json({
-//       success: true,
-//       event: {
-//         _id: event._id,
-//         eventName: event.eventName,
-//         startDate: event.startDate,
-//         endDate: event.endDate,
-//         location: event.location,
-//         tickets: event.tickets.map(t => ({
-//           _id: t._id,
-//           ticketType: t.ticketType,
-//           price: t.price,
-//           quantity: t.quantity
-//         }))
-//       },
-//       ticketSummary: summary,
-//       attendees: formattedAttendees,
-//       totals
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching sales summary:", {
-//       error: error.message,
-//       stack: error.stack,
-//       eventId
-//     });
-    
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching sales summary",
-//       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-//     });
-//   }
-// };
 
 export const getSalesSummary = async (req, res) => {
   try {
@@ -547,4 +424,78 @@ export const monthlyRevenue = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+export const checkIn = async (req, res) => {
+    try {
+        console.log('Received check-in request with params:', req.params);
+        console.log('Request body:', req.body);
+
+        const { eventId } = req.params;
+        const { email } = req.body;
+
+        // 1. Validate that the necessary data is present.
+        if (!eventId || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "Event ID and email are required for check-in."
+            });
+        }
+
+        // 2. First, check if a ticket with this eventId and email exists at all.
+        const existingTicket = await TicketSales.findOne({
+            event: eventId,
+            'buyer.email': email
+        });
+
+        // 3. If a ticket exists, check its status.
+        if (existingTicket && existingTicket.checkInStatus) {
+            // The ticket exists and has already been checked in.
+            return res.status(409).json({ // 409 Conflict is a good status code here.
+                success: false,
+                message: "You've already checked-in."
+            });
+        }
+
+        // 4. Now, attempt to find the ticket and check it in.
+        // This query will only succeed if the ticket exists and is not checked in.
+        const updatedTicket = await TicketSales.findOneAndUpdate(
+            {
+                event: eventId,
+                'buyer.email': email,
+                checkInStatus: false
+            },
+            {
+                $set: {
+                    checkInStatus: true,
+                    checkInTime: new Date()
+                }
+            },
+            { new: true }
+        );
+
+        // 5. Handle the case where no valid ticket was found to update.
+        // This covers cases where the ticket didn't exist in the first place.
+        if (!updatedTicket) {
+            return res.status(404).json({
+                success: false,
+                message: "No valid ticket found for this email."
+            });
+        }
+
+        // 6. Send a success response.
+        res.status(200).json({
+            success: true,
+            message: "Ticket successfully checked in.",
+            data: updatedTicket
+        });
+
+    } catch (error) {
+        console.error("Error during check-in:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred during the check-in process.",
+            error: error.message
+        });
+    }
 };

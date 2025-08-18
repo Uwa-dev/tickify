@@ -45,6 +45,8 @@ const SingleEvents = lazy(() => import("../pages/AdminEvents/SingleEvents"));
 const Account = lazy(() => import("../pages/Dashboard/Account"));
 const NotFound = lazy(() => import("../pages/NotFound/NotFound"))
 const QR = lazy(() => import("../pages/QR/QR"));
+const CheckIn = lazy(() => import("../pages/Public/CheckInPage/CheckIn"))
+
 const routesConfig = [
   // Public routes (no authentication required)
   {
@@ -53,6 +55,15 @@ const routesConfig = [
       <>
         <ScrollToTop />
         {withSuspense(PublicEventPage)}
+      </>
+    ),
+  },
+  {
+    path: "/events/check-in/:eventId",
+    element: (
+      <>
+        <ScrollToTop />
+        {withSuspense(CheckIn)}
       </>
     ),
   },

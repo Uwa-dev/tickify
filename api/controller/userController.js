@@ -518,62 +518,64 @@ export const getTotalUsers = async (req, res) => {
   }
 };
 
-
-// Delete User Account
-export const deleteUserAccount = async (req, res) => {
-  try {
-      await User.findByIdAndDelete(req.user.id);
-      res.status(200).json({ message: "Account deleted successfully" });
-  } catch (error) {
-      res.status(500).json({ error: "Error deleting account: " + error.message });
-  }
-};
-
-// Change Password
-export const changePassword = async (req, res) => {
-  try {
-      const { currentPassword, newPassword } = req.body;
-      const user = await User.findById(req.user.id);
-
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-          return res.status(400).json({ error: "Current password is incorrect" });
-      }
-
-      if (newPassword.length < 8) {
-          return res.status(400).json({ error: "Password must be at least 8 characters long" });
-      }
-
-      user.password = await bcrypt.hash(newPassword, 10);
-      await user.save();
-
-      res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-      res.status(500).json({ error: "Error changing password: " + error.message });
-  }
-};
-
-// Send Email Notifications
-export const sendEventNotifications = async (req, res) => {
-  try {
-      const { eventId, message } = req.body;
-      const tickets = await Ticket.find({ event: eventId }).populate('user', 'email');
-
-      const emails = tickets.map(ticket => ticket.user.email);
-      await sendEmail(emails, "Event Notification", message);
-
-      res.status(200).json({ message: "Notifications sent successfully" });
-  } catch (error) {
-      res.status(500).json({ error: "Error sending notifications: " + error.message });
-  }
-};
-
 export const logoutUser = async (req, res) => {
   try {
-      res.clearCookie("token"); // Assuming you're using cookies for session management
+      res.clearCookie("token"); 
       res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (error) {
       res.status(500).json({ success: false, message: "Error logging out" });
   }
 };
+
+
+// // Delete User Account
+// export const deleteUserAccount = async (req, res) => {
+//   try {
+//       await User.findByIdAndDelete(req.user.id);
+//       res.status(200).json({ message: "Account deleted successfully" });
+//   } catch (error) {
+//       res.status(500).json({ error: "Error deleting account: " + error.message });
+//   }
+// };
+
+// // Change Password
+// export const changePassword = async (req, res) => {
+//   try {
+//       const { currentPassword, newPassword } = req.body;
+//       const user = await User.findById(req.user.id);
+
+//       const isMatch = await bcrypt.compare(currentPassword, user.password);
+//       if (!isMatch) {
+//           return res.status(400).json({ error: "Current password is incorrect" });
+//       }
+
+//       if (newPassword.length < 8) {
+//           return res.status(400).json({ error: "Password must be at least 8 characters long" });
+//       }
+
+//       user.password = await bcrypt.hash(newPassword, 10);
+//       await user.save();
+
+//       res.status(200).json({ message: "Password updated successfully" });
+//   } catch (error) {
+//       res.status(500).json({ error: "Error changing password: " + error.message });
+//   }
+// };
+
+// // Send Email Notifications
+// export const sendEventNotifications = async (req, res) => {
+//   try {
+//       const { eventId, message } = req.body;
+//       const tickets = await Ticket.find({ event: eventId }).populate('user', 'email');
+
+//       const emails = tickets.map(ticket => ticket.user.email);
+//       await sendEmail(emails, "Event Notification", message);
+
+//       res.status(200).json({ message: "Notifications sent successfully" });
+//   } catch (error) {
+//       res.status(500).json({ error: "Error sending notifications: " + error.message });
+//   }
+// };
+
+
 

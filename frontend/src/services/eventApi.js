@@ -118,7 +118,8 @@ export const toggleEventPublish = async (eventId) => {
 export const generateQRCode = async(qrData) => {
   try {
     const response = await eventApi.post('/generate-qr', qrData);
-    return response.data;
+    // Return the specific property holding the base64 URL.
+    return response.data.qrCodeDataUrl;
   } catch (error) {
     console.error("Error generating QR Code:", error);
     throw new Error(
@@ -129,59 +130,59 @@ export const generateQRCode = async(qrData) => {
 
 
 // Delete a finished event
-export const deleteFinishedEvent = async (id) => {
-  try {
-    const response = await eventApi.delete(`/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting finished event:", error);
-    throw new Error(
-      error.response?.data?.message || error.message || "Failed to delete event"
-    );
-  }
-};
+// export const deleteFinishedEvent = async (id) => {
+//   try {
+//     const response = await eventApi.delete(`/${id}`);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error deleting finished event:", error);
+//     throw new Error(
+//       error.response?.data?.message || error.message || "Failed to delete event"
+//     );
+//   }
+// };
 
-// Get published events by organizer
-export const getPublishedEventsByOrganizer = async () => {
-  try {
-    const response = await eventApi.get("/organizer/published");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching published events:", error);
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch published events"
-    );
-  }
-};
+// // Get published events by organizer
+// export const getPublishedEventsByOrganizer = async () => {
+//   try {
+//     const response = await eventApi.get("/organizer/published");
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching published events:", error);
+//     throw new Error(
+//       error.response?.data?.message ||
+//         error.message ||
+//         "Failed to fetch published events"
+//     );
+//   }
+// };
 
-// Delete a published event with no ticket sales
-export const deleteUnsoldPublishedEvent = async (id) => {
-  try {
-    const response = await eventApi.delete(`/${id}/unsold`);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting unsold event:", error);
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to delete unsold event"
-    );
-  }
-};
+// // Delete a published event with no ticket sales
+// export const deleteUnsoldPublishedEvent = async (id) => {
+//   try {
+//     const response = await eventApi.delete(`/${id}/unsold`);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error deleting unsold event:", error);
+//     throw new Error(
+//       error.response?.data?.message ||
+//         error.message ||
+//         "Failed to delete unsold event"
+//     );
+//   }
+// };
 
-// Get event with organizer details (Admin only)
-export const getEventWithOrganizerDetails = async (id) => {
-  try {
-    const response = await eventApi.get(`/${id}/with-organizer`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching event with organizer details:", error);
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch event details"
-    );
-  }
-};
+// // Get event with organizer details (Admin only)
+// export const getEventWithOrganizerDetails = async (id) => {
+//   try {
+//     const response = await eventApi.get(`/${id}/with-organizer`);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching event with organizer details:", error);
+//     throw new Error(
+//       error.response?.data?.message ||
+//         error.message ||
+//         "Failed to fetch event details"
+//     );
+//   }
+// };

@@ -7,8 +7,8 @@ import {
     userProfile, 
     updateUserProfile, 
     updateAccountDetails, 
-    deleteUserAccount, 
-    changePassword, 
+    // deleteUserAccount, 
+    // changePassword, 
     getUserById 
 } from '../controller/userController.js';
 
@@ -21,7 +21,7 @@ userRouter.get("/profile", protect, userProfile);
 userRouter.put('/profile/update', protect, updateUserProfile);
 userRouter.put('/account/details', protect, updateAccountDetails);
 userRouter.get('/:id', protect, admin, getUserById )
-userRouter.delete('/:id', protect, deleteUserAccount);
-userRouter.put('/:id/password', changePassword);
+// userRouter.delete('/:id', protect, deleteUserAccount);
+// userRouter.put('/:id/password', changePassword);
 
 export default userRouter;

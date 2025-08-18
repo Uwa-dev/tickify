@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 // import "../event.css";
 import "./create.css";
 import { useNavigate } from "react-router-dom";
-import { eventApi, createEvent } from "../../../services/eventApi";
+import { createEvent } from "../../../services/eventApi";
 import { toast } from "react-toastify";
 import { meAccount } from "../../../services/authApi";
 
@@ -26,6 +26,7 @@ const generateTimeOptions = () => {
 const CreateEvent = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null); 
+  const [isLoading, setIsLoading] = useState(false);
   const [customURL, setCustomURL] = useState("tickify/events/");
   const [formData, setFormData] = useState({
     eventName: "",
@@ -234,6 +235,8 @@ const CreateEvent = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const result = await saveDataToBackend();
    
     if (result) {
@@ -242,6 +245,8 @@ const CreateEvent = () => {
     } else {
       toast.error("Failed to save event. Please try again.");
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -256,6 +261,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="eventName" className="create-event-label">
                   Event Name
+                  <span className="required-asterisk">*</span>
                 </label>
                 <input
                   type="text"
@@ -273,6 +279,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="description" className="create-event-label">
                   Description
+                  <span className="required-asterisk">*</span>
                 </label>
                 <textarea
                   name="description"
@@ -291,6 +298,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="eventLocation" className="create-event-label">
                   Location
+                  <span className="required-asterisk">*</span>
                 </label>
                 <input
                   type="text"
@@ -309,6 +317,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="eventStartDate" className="create-event-label">
                   Event Start Date and Time
+                  <span className="required-asterisk">*</span>
                 </label>
                 <div className="form-date-input">
                   <input
@@ -341,6 +350,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="eventEndDate" className="create-event-label">
                   Event End Date and Time
+                  <span className="required-asterisk">*</span>
                 </label>
                 <div className="form-date-input">
                   <input
@@ -373,6 +383,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="customURL" className="create-event-label">
                   Use custom URL
+                  <span className="required-asterisk">*</span>
                 </label>
                 <input
                   type="text"
@@ -388,6 +399,7 @@ const CreateEvent = () => {
               <div className="form-group">
                 <label htmlFor="eventCategory" className="create-event-label">
                   Event Category
+                  <span className="required-asterisk">*</span>
                 </label>
                 <select
                   name="eventCategory"
@@ -443,7 +455,6 @@ const CreateEvent = () => {
                   type="button"
                   onClick={nextStep}
                   className="submit-button continue-event-btn"
-                  // disabled={!isFormValid()}
                 >
                   Continue
                 </button>
@@ -453,7 +464,7 @@ const CreateEvent = () => {
 
           {page == 1 && (
             <div>
-              <div className="form-group">
+              <div className="form-group img">
                 <label htmlFor="eventImage" className="create-event-label">
                   Event Image
                 </label>
@@ -474,25 +485,49 @@ const CreateEvent = () => {
                       </button>
                     </>
                   ) : (
-                    <>
+                    // <>
+                    //   <input
+                    //     type="file"
+                    //     id="eventImage"
+                    //     accept="image/*"
+                    //     onChange={handleImageUpload}
+                    //   />
+                    // </>
+                    <div className="placeholder-container">
+                      <svg 
+                        className="placeholder-icon" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5"
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <p className="placeholder-text">Drag & Drop or Click to Upload</p>
                       <input
                         type="file"
                         id="eventImage"
                         accept="image/*"
                         onChange={handleImageUpload}
+                        className="file-input-overlay"
                       />
-                    </>
+                    </div>
                   )}
                 </div>
-                <p className="placeholder-text">
-                  Click or drag to upload a hand flier
-                </p>
+                {/* <p className="placeholder-text">
+                  Click to upload a hand flier
+                </p> */}
               </div>
 
               {Object.entries(socialMediaHandles).map(([key, value]) => (
                 <div className="form-group" key={key}>
                   <label htmlFor={key} className="create-event-label">
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                    {key.charAt(0).toUpperCase() + key.slice(1)} (Optional)
                   </label>
                   <input
                     type="text"
@@ -507,8 +542,9 @@ const CreateEvent = () => {
               ))}
 
               <div className="create-event-btns">
-                <button type="submit" className="submit-button">
-                  Continue
+                <button type="submit" className="submit-button" disabled={isLoading}>
+                  {/* Continue */}
+                  {isLoading ? "Loading..." : "Continue"}
                 </button>
               </div>
             </div>

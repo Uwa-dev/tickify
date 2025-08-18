@@ -120,8 +120,7 @@
     transition: background-color 0.2s, color 0.2s;
 }
 .dropdown-link.active {
-    background-color: #87ceeb;
-    color: white;
+    background-color: #F6CCE1;
 }
 .dropdown-link:hover {
     background-color: #f7f7f7;

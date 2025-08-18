@@ -213,40 +213,30 @@ export const getUserById = async (userId) => {
 };
 
 // Delete User Account
-export const deleteUserAccount = async (id) => {
-    try {
-      const response = await api.delete(`/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting account:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to delete account";
-      throw new Error(errorMessage);
-    }
-};
+// export const deleteUserAccount = async (id) => {
+//     try {
+//       const response = await api.delete(`/${id}`);
+//       return response.data;
+//     } catch (error) {
+//       console.error("Error deleting account:", error);
+//       const errorMessage = error.response?.data?.message || error.message || "Failed to delete account";
+//       throw new Error(errorMessage);
+//     }
+// };
 
-// Change Password
-export const changePassword = async (id, data) => {
-    try {
-      const response = await api.put(`/${id}/password`, data);
-      return response.data;
-    } catch (error) {
-      console.error("Error changing password:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to change password";
-      throw new Error(errorMessage);
-    }
-};
+// // Change Password
+// export const changePassword = async (id, data) => {
+//     try {
+//       const response = await api.put(`/${id}/password`, data);
+//       return response.data;
+//     } catch (error) {
+//       console.error("Error changing password:", error);
+//       const errorMessage = error.response?.data?.message || error.message || "Failed to change password";
+//       throw new Error(errorMessage);
+//     }
+// };
 
-// Ban User (Admin-Only Action)
-export const banUser = async (id) => {
-    try {
-      const response = await api.put(`/${id}`, { isBanned: true });
-      return response.data;
-    } catch (error) {
-      console.error("Error banning user:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to ban user";
-      throw new Error(errorMessage);
-    }
-};
+
   
 
 export default api
