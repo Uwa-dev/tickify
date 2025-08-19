@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { ArrowLeft } from 'lucide-react';
 import './event.css';
 import './viewEvents.css';
-import Details from '../../components/reuse/Details';
+import Details from '../../components/reuse/Details/Details';
 
 const ManageEventTickets = () => {
   const { eventId } = useParams();

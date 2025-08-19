@@ -1,6 +1,4 @@
-
 import React, { useState, useEffect } from "react";
-// import "../event.css";
 import "./create.css";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../../../services/eventApi";

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
-import './event.css';
+// import './event.css';
+import "./add.css"
 import { createTicket } from '../../services/ticketApi';
 import { toast } from 'react-toastify';
 

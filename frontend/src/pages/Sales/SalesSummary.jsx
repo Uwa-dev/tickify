@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import '../Events/viewEvents.css';
 import '../Events/event.css';
-import Details from '../../components/reuse/Details';
+import Details from '../../components/reuse/Details/Details';
 import { getEventSalesSummary } from '../../services/ticketApi';
 
 // Define a default goal for "unlimited" tickets for progress calculation

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Details from '../../components/reuse/Details';
+import Details from '../../components/reuse/Details/Details';
 import { ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from "react-router-dom";
 import { getEventById } from '../../services/eventApi';

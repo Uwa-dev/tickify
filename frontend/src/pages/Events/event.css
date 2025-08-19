@@ -151,25 +151,6 @@
     box-shadow: 0 0 6px var(--dark-color);
 }
 
-/* .rich-text-editor {
-    margin-top: 0.5rem;
-    border: 1px solid var(--accent-color);
-    border-radius: 4px;
-    font-size: 1rem;
-    color: #3c3939;
-}
-
-.rich-text-editor .ql-toolbar {
-    background-color: #eee;
-    color: black;
-}
-
-.rich-text-editor .ql-container {
-    font-family: Arial, sans-serif;
-    min-height: 250px;
-    border-radius: 4px;
-} */
-
 .event-details-btn{
     margin-top: 1rem;
 }

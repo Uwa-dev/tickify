@@ -1,0 +1,97 @@
+.ticket-parent{
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-ticket-container {
+    width: 450px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #eee;
+}
+
+.form-title {
+    color: #3c3939;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+}
+
+.ticket-label{
+    font-weight: 400;
+    
+}
+
+.ticket-select{
+    width: 70%;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    border: 1px solid rgb(174, 162, 162);
+    font-size: 1rem;
+}
+
+.ticket-checkbox{
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.ticket-group {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.ticket-form-group{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.ticket-btn-group{
+    display: flex;
+    justify-content: space-between;
+}
+
+.add-ticket-button,
+.remove-button,
+.submit-button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color);
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.add-ticket-button:hover,
+.remove-button:hover,
+.submit-button:hover,
+.add-ticket-btn:hover {
+    background-color: var(--accent-color);
+}
+
+@media (max-width:450px) {
+    .add-ticket-container {
+        width: 300px;
+    }
+    .form-group{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .ticket-select{
+        width: 100%;
+    }
+    .ticket-form-group{
+        gap: 0.5rem;
+    }
+    
+}
