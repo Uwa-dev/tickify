@@ -43,22 +43,13 @@
   z-index: 2;
 }
 
-.back-container {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 16px; /* increased horizontal padding for oval effect */
-  width: fit-content;
-  border-radius: 999px; /* makes it oval */
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 1.7rem;
-  background-color: inherit;
-}
-
-.back-container:hover {
-  background-color: var(--color); /* from your variables */
-  color: white;
+.form-title{
+    background-image: linear-gradient(45deg, var(--color), var(--background-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; 
+    margin-bottom: 1rem;
+    font-size: var(--h2-font-size);
 }
 
 .form-group {
@@ -71,7 +62,7 @@
 .create-event-label {
   /* display: block; */
   margin-bottom: 0.5rem;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--color);
   padding: 0.4rem 0;
   font-size: 1rem;
@@ -83,18 +74,27 @@
   border: 1px solid var(--color);
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-family: inherit;
   color: var(--pink-background);
   background-color: inherit;
-  font-weight: 800;
+  font-weight: 600;
+  transform: translateY(-0.3rem);
+}
+
+.form-description{
+  margin-bottom: 2px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .text-description{
   width: 100%;
-  height: 14rem;
+  height: 7rem;
   resize: none;
-  border: 1px solid var(--accent-color);
+  border: none;
+  /* border: 1px solid var(--color); */
   border-radius: 4px;
   font-size: 1rem;
   font-family: inherit;
@@ -102,6 +102,7 @@
   padding: 0.75rem;
   background: inherit;
   font-weight: 800;
+  outline: none;
 }
 
 .text-description:focus{
@@ -114,10 +115,13 @@
   width: 100%;
   padding: 0.75rem;
   /* border: 1px solid var(--accent-color); */
+  border: none;
   border-radius: 4px;
   font-size: 1rem;
   background: inherit;
   color: var(--pink-background);
+  width: fit-content;
+  font-weight: 600;
 }
 
 .form-input-date:focus {
@@ -200,28 +204,45 @@
   margin-top: 0.5rem;
 }
 
-.create-event-btns{
-    display: flex;
-    gap: 0.5rem;
+.form-input::placeholder{
+  color: var(--pink-background);
 }
 
+
 .submit-button {
-    width: 100%; 
-    padding: 0.75rem;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  width: 100%; 
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: var(--color);
+  color: var(--pink-background);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover{
+  background-image: linear-gradient(45deg, var(--color), var(--background-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; 
+}
+
+.create-event-btns{
+  background-color: var(--pink-background);
+  border-radius: 5px;
 }
 
 @media (max-width:450px) {
 
-  .form-group{
-    flex-direction: column;
-    align-items: flex-start;
+  .event-details-container{
+    padding: 10px;
+  }
+
+  .form-image{
+    height: 400px;
+    width: 300px;
   }
 
 }

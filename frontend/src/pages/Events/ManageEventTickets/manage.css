@@ -1,0 +1,153 @@
+.heading-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-title{
+    background-image: linear-gradient(45deg, var(--color), var(--background-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; 
+    margin-bottom: 1rem;
+    font-size: var(--h2-font-size);
+}
+
+.add-ticket-btn{
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color);
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.add-ticket-btn:hover {
+    background-color: var(--accent-color);
+}
+
+.tickets-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+    
+}
+
+.ticket-form-group{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.ticket-form-group p{
+    color: #4b5563;
+}
+
+.link-url{
+    text-decoration: none;
+    color: white;
+}
+
+.ticket-group {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+
+.remove-button{
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color);
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.remove-button:hover{
+    background-color: var(--accent-color);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--pink-background);
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+}
+
+.modal-close{
+    border: none;
+    background-color: transparent;
+}
+
+.x-button{
+    color: #ccc;
+    transition: color 0.3s ease-in-out;
+}
+
+.x-button:hover{
+    color: var(--text-color);
+}
+
+.ticket-btn-group{
+    display: flex;
+    justify-content: space-between;
+}
+
+.ticket-select{
+    background: inherit;
+}
+
+.ticket-select:focus{
+    outline: none;
+    border-color: var(--color);
+    box-shadow: 0 0 4px var(--color);
+}
+
+.modal-header h3{
+    background-image: linear-gradient(45deg, var(--color), var(--background-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; 
+    font-size: var(--h2-font-size);
+}
+
+.ticket-label{
+    color: var(--color);
+}
+
+
+@media (max-width:500px) {
+    .heading-container{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getRegularGuests } from '../../services/ticketApi'; // NEW: Import the API service
-import '../Events/viewEvents.css'; // Assuming common event styles
-import '../Events/event.css'; // Assuming common event styles
+import { getRegularGuests } from '../../services/ticketApi'; 
+import './regular.css'
+import Load from '../../components/reuse/Load';
+import {Users} from 'lucide-react';
+// import '../Events/viewEvents.css'; // Assuming common event styles
+// import '../Events/event.css'; // Assuming common event styles
 
 const Regular = () => {
   const [regularGuests, setRegularGuests] = useState([]);
@@ -27,9 +30,7 @@ const Regular = () => {
 
   if (loading) {
     return (
-      <div className="allevents-container">
-        <div className="loading-container">Loading regular guests...</div>
-      </div>
+      <Load />
     );
   }
 
@@ -37,11 +38,11 @@ const Regular = () => {
     <div className='allevents-container'>
 
       <div className='heading-container'>
-        <h3 className="form-title">Regular Guests</h3>
+        <h3 className="form-title">Regular guests at your event</h3>
       </div>
 
       <div className="add-ticket-container" style={{ marginTop: '20px' }}> {/* Reusing container for table styling */}
-        <h4 className="form-subtitle">Guests by Events Attended</h4>
+
         {regularGuests.length > 0 ? (
           <div className="table-responsive">
             <table className="sales-table">
@@ -66,7 +67,10 @@ const Regular = () => {
             </table>
           </div>
         ) : (
-          <p className="no-tickets-message">No regular guests found yet.</p>
+          <div className='no-guests'>
+            <Users size={80}/>
+            <p className="no-tickets-message">Host your first event and we'll get youa list of your regular guests</p>
+          </div>
         )}
       </div>
     </div>

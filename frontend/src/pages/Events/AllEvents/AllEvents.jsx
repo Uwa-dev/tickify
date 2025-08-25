@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Ticket } from "lucide-react";
 import "./viewEvents.css"; // Ensure this CSS file contains necessary styles
-import { getEventsByOrganizer } from '../../services/eventApi';
-import { getEventSalesSummary } from '../../services/ticketApi'; // Import the sales summary API
+import { getEventsByOrganizer } from '../../../services/eventApi';
+import { getEventSalesSummary } from '../../../services/ticketApi'; // Import the sales summary API
 import { toast } from 'react-toastify';
+import Load from '../../../components/reuse/Load';
 
 const AllEvents = () => {
   const [events, setEvents] = useState([]);
@@ -64,9 +65,7 @@ const AllEvents = () => {
 
   if (loadingEvents) {
     return (
-      <div className='allevents-container'>
-        <p>Loading events...</p>
-      </div>
+      <Load />
     );
   }
 

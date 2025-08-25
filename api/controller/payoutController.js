@@ -97,41 +97,93 @@ export const getPayoutsForEvent = async (req, res) => {
 
 export const getPayoutSummaryForEvent = async (req, res) => {
     try {
+        console.log("=== GET PAYOUT SUMMARY CALLED ===");
         const { eventId } = req.params;
+        console.log("Event ID:", eventId);
 
         const event = await checkOrganizerAuthorization(req, res, eventId);
         if (!event) return;
 
-        // Calculate total revenue from ticket sales for this event
-        const totalRevenueResult = await TicketSales.aggregate([
-            { $match: { event: new mongoose.Types.ObjectId(eventId), paymentStatus: 'Successful' } },
-            { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+        // Calculate total revenue AND platform fees from ticket sales
+        const revenueResult = await TicketSales.aggregate([
+            { 
+                $match: { 
+                    event: new mongoose.Types.ObjectId(eventId), 
+                    paymentStatus: 'Successful' 
+                } 
+            },
+            { 
+                $group: { 
+                    _id: null, 
+                    totalRevenue: { $sum: "$totalAmount" },
+                    totalPlatformFees: { $sum: "$revenue" }
+                } 
+            }
         ]);
-        const totalRevenue = totalRevenueResult.length > 0 ? totalRevenueResult[0].total : 0;
+        
+        let totalRevenue = 0;
+        let totalPlatformFees = 0;
+        let organizerRevenue = 0;
+        
+        if (revenueResult.length > 0) {
+            totalRevenue = revenueResult[0].totalRevenue || 0;
+            totalPlatformFees = revenueResult[0].totalPlatformFees || 0;
+            organizerRevenue = totalRevenue - totalPlatformFees;
+        }
+
+        console.log("Revenue calculation:", {
+            totalRevenue,
+            totalPlatformFees, 
+            organizerRevenue
+        });
 
         // Calculate total already paid out for this event
         const totalPaidOutResult = await Payout.aggregate([
-            { $match: { event: new mongoose.Types.ObjectId(eventId), status: { $in: ['Completed', 'Processing'] } } },
-            { $group: { _id: null, total: { $sum: "$amount" } } }
+            { 
+                $match: { 
+                    event: new mongoose.Types.ObjectId(eventId), 
+                    status: { $in: ['Completed', 'Processing'] } 
+                } 
+            },
+            { 
+                $group: { 
+                    _id: null, 
+                    total: { $sum: "$amount" } 
+                } 
+            }
         ]);
         const totalPaidOut = totalPaidOutResult.length > 0 ? totalPaidOutResult[0].total : 0;
 
-        const remainingBalance = totalRevenue - totalPaidOut;
+        const remainingBalance = organizerRevenue - totalPaidOut;
+
+        console.log("Final calculation:", {
+            totalRevenue,
+            totalPlatformFees,
+            organizerRevenue,
+            totalPaidOut,
+            remainingBalance
+        });
 
         res.status(200).json({
             status: true,
             message: "Payout summary retrieved successfully.",
             data: {
                 totalRevenue,
+                totalPlatformFees,
+                organizerRevenue,
                 totalPaidOut,
                 remainingBalance,
-                event // Include event details for convenience
+                event
             }
         });
 
     } catch (error) {
         console.error("Error fetching payout summary:", error);
-        res.status(500).json({ status: false, message: "Internal server error.", error: error.message });
+        res.status(500).json({ 
+            status: false, 
+            message: "Internal server error.", 
+            error: error.message 
+        });
     }
 };
 

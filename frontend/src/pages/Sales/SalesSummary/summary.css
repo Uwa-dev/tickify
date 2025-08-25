@@ -1,0 +1,210 @@
+.form-title{
+    background-image: linear-gradient(45deg, var(--color), var(--background-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; 
+    margin-bottom: 1rem;
+    font-size: var(--h2-font-size);
+}
+
+.sales-summary-container {
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  padding: 1rem;
+  border-radius: 8px;
+  background: #eee;
+  border-left: 4px solid var(--color);
+}
+
+.summary-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--color);
+}
+
+.sales-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: #4b5563;
+}
+
+.tables-container {
+  display: grid;
+  gap: 2rem;
+}
+
+.summary-table, .attendees-table {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  overflow-x: scroll;
+}
+
+.attendees-table{
+  margin-top: 1.5rem;
+}
+
+.attendees-table-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.excel-download {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: #1e6f5c;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #f0f9f6;
+    transition: all 0.2s ease;
+}
+
+.excel-download:hover {
+    background-color: #e0f2ed;
+    color: #0d5d4b;
+}
+
+/* Add to your summary.css */
+.status-badge.checked-in {
+    background-color: #4caf50;
+    color: white;
+}
+
+.status-badge.not-checked-in {
+    background-color: #f44336;
+    color: white;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Add these styles to your CSS file */
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.sales-table th,
+.sales-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sales-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    /* color: #333; */
+    color: var(--accent-color);
+}
+
+.sales-table tr:hover {
+    background-color: #f9f9f9;
+}
+.sales-table td {
+    color: #4b5563;
+}
+/* Progress Bar Styles */
+.progress-container {
+    width: 100%;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    height: 24px;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-bar.active {
+    background-color: var(--color);
+}
+
+.progress-bar.exception {
+    background-color: #ff4d4f;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(84, 81, 81, 0.856);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Badge Styles */
+.ticket-type-badge {
+    padding: 4px 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    font-weight: 500;
+    color: var(--background-color);
+    display: inline-block;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-badge.paid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+@media (max-width: 500px) {
+  .sales-summary-container{
+    padding: 0.3rem;
+  }
+
+  .summary-table,
+  .attendees-table{
+    padding: 0.5rem;
+  }
+}

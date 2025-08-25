@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './details.css';
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, TriangleAlert } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEventById, updateEvent } from '../../../services/eventApi';
 import store from '../../../util/store';
@@ -223,7 +223,10 @@ const EventDetails = () => {
   }
 
   if (!event) {
-    return <div className="error-container">No event found</div>;
+    return <div className="error-container">
+      <TriangleAlert size={130}/>
+     <p> No event found</p>
+    </div>;
   }
 
   return (
@@ -237,7 +240,7 @@ const EventDetails = () => {
         <Details event={event} />
 
         <div className='edit-event-container'>
-          {/* <h3>Edit Event</h3> */}
+          <h3 className='form-title'>Edit Event</h3>
 
           <form className="event-form" onSubmit={handleSubmit}>
             <div className="form-group">
@@ -254,9 +257,9 @@ const EventDetails = () => {
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="description" className="create-event-label">
-                Description
+            <div className="form-description">
+              <label htmlFor="description" className="create-event-label ">
+                Description:
               </label>
               <textarea
                 id="description"
@@ -270,7 +273,7 @@ const EventDetails = () => {
 
             <div className="form-group">
               <label htmlFor="location" className="create-event-label">
-                Location
+                Location:
               </label>
               <input
                 type="text"
@@ -285,10 +288,9 @@ const EventDetails = () => {
 
             <div className="form-group">
               <label htmlFor="startDate" className="create-event-label">
-                Event Start Date and Time
+                Event Start Date:
               </label>
-              <div className="form-date-input">
-                <input
+              <input
                   type="date"
                   id="startDate"
                   className="form-input-date"
@@ -296,23 +298,27 @@ const EventDetails = () => {
                   onChange={handleChange}
                   required
                 />
-                <input
-                  type="time"
-                  id="startTime"
-                  className="form-input-date"
-                  value={formData.startTime}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="startDate" className="create-event-label">
+                Event Start Time:
+              </label>
+              <input
+                type="time"
+                id="startTime"
+                className="form-input-date"
+                value={formData.startTime}
+                onChange={handleChange}
+                required
+              /> 
             </div>
 
             <div className="form-group">
               <label htmlFor="endDate" className="create-event-label">
-                Event End Date
+                Event End Date:
               </label>
-              <div className="form-date-input">
-                <input
+              <input
                   type="date"
                   id="endDate"
                   className="form-input-date"
@@ -320,20 +326,25 @@ const EventDetails = () => {
                   onChange={handleChange}
                   required
                 />
-                <input
-                  type="time"
-                  id="endTime"
-                  className="form-input-date"
-                  value={formData.endTime}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="endDate" className="create-event-label">
+                Event End Time:
+              </label>  
+              <input
+                type="time"
+                id="endTime"
+                className="form-input-date"
+                value={formData.endTime}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="form-group">
               <label htmlFor="customURL" className="create-event-label">
-                Use custom URL
+                Use custom URL:
               </label>
               <input
                 type="text"
@@ -348,7 +359,7 @@ const EventDetails = () => {
 
             <div className="form-group">
               <label htmlFor="eventCategory" className="create-event-label">
-                Event Category
+                Event Category:
               </label>
               <select
                 id="eventCategory"
@@ -376,9 +387,6 @@ const EventDetails = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="eventImage" className="create-event-label">
-                Event Image
-              </label>
               <div className="form-image">
                 {image ? (
                   typeof image === 'string' ? (

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { meAccount, updateAccountDetails } from '../../services/authApi';
-import '../Events/event.css';
 import './profile.css';
+import Load from '../../components/reuse/Load';
 
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
@@ -85,16 +85,13 @@ const AccountDetails = () => {
 
   if (isLoading) {
     return (
-      <div className='event-create-container'>
-        <div className='create-form-container'>
-          <h3 className='form-title'>Loading account details...</h3>
-        </div>
-      </div>
+      <Load />
+      
     );
   }
 
   return (
-    <div className='event-create-container'>
+    <div className='allevents-container'>
       <div className='create-form-container'>
         <h3 className='form-title'>
           Hey {userData.firstName || 'User'}, are these details correct?
@@ -107,7 +104,7 @@ const AccountDetails = () => {
                 type="text" 
                 id="accountName" 
                 name="accountName"
-                placeholder="Enter account name (must match your full name)" 
+                placeholder="Enter account name" 
                 className="form-input"
                 value={accountDetails.accountName}
                 onChange={handleChange}

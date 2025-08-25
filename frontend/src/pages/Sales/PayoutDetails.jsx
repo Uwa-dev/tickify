@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'; // Import useSelector
 import { getSinglePayoutAdmin, completePayoutAdmin, cancelPayoutOrganizer } from "../../services/payoutApi";
 import { useParams } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
+import Load from "../../components/reuse/Load";
 
 const PayoutDetails = () => {
   const { payoutId } = useParams();
@@ -112,9 +113,7 @@ const PayoutDetails = () => {
   // Display loading state for payout data
   if (loading) {
     return (
-      <div className="container">
-        <p className="message">Loading payout details...</p>
-      </div>
+      <Load />
     );
   }
 
@@ -142,20 +141,20 @@ const PayoutDetails = () => {
   // Use optional chaining (?.) for currentUser as it might be null if no user is logged in
   const isCurrentUserOrganizer = currentUser && currentUser._id === organizer?._id;
 
-  // --- START DEBUGGING LOGS ---
-  console.group("PayoutDetails Component Debugging");
-  console.log("1. Current Payout Status:", status);
-  console.log("2. Current User (from Redux):", currentUser);
-  console.log("3. Is Authenticated (from Redux):", isAuthenticated);
-  console.log("4. Current User isAdmin (from Redux):", currentUser?.isAdmin);
-  console.log("5. Current User ID (from Redux):", currentUser?._id);
-  console.log("6. Payout Organizer ID:", organizer?._id);
-  console.log("7. Is Current User Organizer (currentUser._id === organizer._id):", isCurrentUserOrganizer);
-  // Updated conditions for logging to reflect the fix
-  console.log("8. Admin button condition (currentUser?.isAdmin && status.toLowerCase() === 'pending'):", currentUser?.isAdmin && status.toLowerCase() === 'pending');
-  console.log("9. Organizer button condition (isCurrentUserOrganizer && status.toLowerCase() === 'pending'):", isCurrentUserOrganizer && status.toLowerCase() === 'pending');
-  console.groupEnd();
-  // --- END DEBUGGING LOGS ---
+  // // --- START DEBUGGING LOGS ---
+  // console.group("PayoutDetails Component Debugging");
+  // console.log("1. Current Payout Status:", status);
+  // console.log("2. Current User (from Redux):", currentUser);
+  // console.log("3. Is Authenticated (from Redux):", isAuthenticated);
+  // console.log("4. Current User isAdmin (from Redux):", currentUser?.isAdmin);
+  // console.log("5. Current User ID (from Redux):", currentUser?._id);
+  // console.log("6. Payout Organizer ID:", organizer?._id);
+  // console.log("7. Is Current User Organizer (currentUser._id === organizer._id):", isCurrentUserOrganizer);
+  // // Updated conditions for logging to reflect the fix
+  // console.log("8. Admin button condition (currentUser?.isAdmin && status.toLowerCase() === 'pending'):", currentUser?.isAdmin && status.toLowerCase() === 'pending');
+  // console.log("9. Organizer button condition (isCurrentUserOrganizer && status.toLowerCase() === 'pending'):", isCurrentUserOrganizer && status.toLowerCase() === 'pending');
+  // console.groupEnd();
+  // // --- END DEBUGGING LOGS ---
 
 
   return (

@@ -123,7 +123,9 @@ export const deletePromoCode = async (promoCodeId) => {
 
 export const getEventSalesSummary = async (eventId) => {
   try{
+    console.log("Calling sales summary for event:", eventId);
     const response = await ticketApi.get(`/${eventId}/sales-summary`)
+    console.log("Sales summary response:", response.data);
     return response.data;
   }catch(error){
     console.error("Error fetching tickets sales summary:", error);

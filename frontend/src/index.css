@@ -7,6 +7,7 @@
   --light-hover: #fbe06b;
   --accent-color: #a35a7d;
   --dark-color: #f0a6ca;
+  --text-color: #4b5563;
 
   --normal-font: "Outfit", sans-serif;
 
@@ -74,4 +75,39 @@ li{
 
 .allevents-container{
   padding: 1rem;
+}
+
+.back-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px; /* increased horizontal padding for oval effect */
+  background-color: inherit;
+  width: fit-content;
+  border-radius: 999px; /* makes it oval */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.7rem;
+  color: var(--color);
+}
+
+.back-container:hover {
+  background-color: var(--color); /* from your variables */
+  color: white;
+}
+
+.error-container{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--accent-color);
+  font-size: var(--h1-font-size);
+}
+
+@media (max-width:500px) {
+  .allevents-container{
+    padding: 0.5rem;
+  }
 }

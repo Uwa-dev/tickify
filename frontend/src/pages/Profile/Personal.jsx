@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { meAccount, updateUserProfile } from '../../services/authApi';
-import '../Events/event.css';
 import './profile.css';
+import Load from '../../components/reuse/Load';
 
 const Personal = () => {
   const [userData, setUserData] = useState({
@@ -75,16 +75,12 @@ const Personal = () => {
 
   if (isLoading) {
     return (
-      <div className='event-create-container'>
-        <div className='create-form-container'>
-          <h3 className='form-title'>Loading your profile...</h3>
-        </div>
-      </div>
+      < Load />
     );
   }
 
   return (
-    <div className='event-create-container'>
+    <div className='allevents-container'>
       <div className='create-form-container'>
         <h3 className='form-title'>
           Hey {userData.firstName || 'User'}, is your information correct?

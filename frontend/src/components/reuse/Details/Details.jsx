@@ -67,7 +67,7 @@ const Details = ({ event }) => {
 
             <div className='event-links'>
                 <Link to={`/events/details/${event._id}`} className='event-edit-link'>
-                    Event Details
+                    Details
                 </Link>
 
                 <div className={`event-dropdown ${contentOpen ? 'active' : ''}`}>

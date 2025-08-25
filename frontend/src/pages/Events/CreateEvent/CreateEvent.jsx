@@ -483,14 +483,6 @@ const CreateEvent = () => {
                       </button>
                     </>
                   ) : (
-                    // <>
-                    //   <input
-                    //     type="file"
-                    //     id="eventImage"
-                    //     accept="image/*"
-                    //     onChange={handleImageUpload}
-                    //   />
-                    // </>
                     <div className="placeholder-container">
                       <svg 
                         className="placeholder-icon" 

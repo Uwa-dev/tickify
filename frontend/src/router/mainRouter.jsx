@@ -15,7 +15,7 @@ const withSuspense = (Component) => (
 
 const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard"));
 const AdminDashboard = lazy(() => import("../pages/Dashboard/AdminDashboard"));
-const AllEvents = lazy(() => import("../pages/Events/AllEvents"));
+const AllEvents = lazy(() => import("../pages/Events/AllEvents/AllEvents"));
 const AllAdminEvents = lazy(() => import("../pages/AdminEvents/AllAdminEvents"));
 const CreateEvent = lazy(() => import("../pages/Events/CreateEvent/CreateEvent"));
 const Login = lazy(() => import("../pages/Login/Login"));
@@ -30,11 +30,11 @@ const UsersDetails = lazy(() => import("../pages/Users/UsersDetails"));
 const PublicEventPage = lazy(() => import("../pages/Public/PublicEventPage"));
 const EventListingPage = lazy(() => import("../pages/Public/EventListingPage/EventListingPage"));
 const PaymentVerification = lazy(() => import("../pages/Public/PaymentVerification"));
-const SalesSummary = lazy(() => import("../pages/Sales/SalesSummary"));
-const ManageEventTickets = lazy(() => import("../pages/Events/ManageEventTickets"));
-const UpdateTicket = lazy(() => import("../pages/Events/UpdateTicket"));
-const PromoCode = lazy(() => import("../pages/Events/PromoCode"));
-const PayoutSummary = lazy(() => import("../pages/Sales/PayoutSummary"));
+const SalesSummary = lazy(() => import("../pages/Sales/SalesSummary/SalesSummary"));
+const ManageEventTickets = lazy(() => import("../pages/Events/ManageEventTickets/ManageEventTickets"));
+// const UpdateTicket = lazy(() => import("../pages/Events/UpdateTicket/UpdateTicket"));
+const PromoCode = lazy(() => import("../pages/Events/PromoCode/PromoCode"));
+const PayoutSummary = lazy(() => import("../pages/Sales/PayoutSummary/PayoutSummary"));
 const SingleUser = lazy(() => import("../pages/Users/SingleUser"));
 const PlatformFee = lazy(() => import("../pages/Platform/PlatformFee"));
 const Broadcast = lazy(() => import("../pages/Platform/Broadcast"));
@@ -248,15 +248,15 @@ const routesConfig = [
           </Suspense>
         ),
       },
-      {
-        path: "/ticket/:ticketId",
-        // element: withSuspense(UpdateTicket),
-        element: (
-          <Suspense fallback={<Load />}>
-            <UpdateTicket />
-          </Suspense>
-        ),
-      },
+      // {
+      //   path: "/ticket/:ticketId",
+      //   // element: withSuspense(UpdateTicket),
+      //   element: (
+      //     <Suspense fallback={<Load />}>
+      //       <UpdateTicket />
+      //     </Suspense>
+      //   ),
+      // },
       {
         path: "/events/promo-code/:eventId",
         // element: withSuspense(PromoCode),

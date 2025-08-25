@@ -1,28 +1,25 @@
 
-.allevents-container{
-    padding: 1rem;
-}
-
 .allevents-grid-container{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
 }
 
 .event-container{
-    background-color: white;
-    height: 15rem;
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    background-color: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-    padding: 16px;
-    margin-bottom: 20px;
+  background-color: white;
+  height: 15rem;
+  display: flex;
+  min-width: 300px;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  padding: 16px;
+  margin-bottom: 20px;
 }
 
 .event-container:hover {
@@ -67,24 +64,6 @@
   text-decoration: none;
   color: inherit;
   display: block;
-}
-
-.back-container {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 16px; /* increased horizontal padding for oval effect */
-    background-color: white;
-    width: fit-content;
-    border-radius: 999px; /* makes it oval */
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 1.7rem;
-}
-
-.back-container:hover {
-  background-color: var(--color); /* from your variables */
-  color: white;
 }
 
 .event-details {
@@ -373,7 +352,7 @@
 
 .sales-stats {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-uiiuetween;
 }
 
 .sales-stats span {

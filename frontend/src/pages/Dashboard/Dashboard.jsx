@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import { getDashboardSummary } from '../../services/dashboardApi'; // NEW: Import dashboard API
 import { toast } from 'react-toastify';
-import "./dashboard.css"; // Assuming dashboard-specific styles
-import ScrollToTop from '../../components/reuse/ScrollToTop';
+import "./dashboard.css"; 
 
 const Dashboard = () => {
   const [summary, setSummary] = useState({
@@ -155,11 +154,10 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <section className="quick-actions">
-        <Link to="/events/create" className="action-button">Create a New Event</Link>
-        <Link to="/events/all" className="action-button">View All Events</Link>
+        <Link to="/events/create" className="action-buttons">Create a New Event</Link>
+        <Link to="/events/all" className="action-buttons">View All Events</Link>
       </section>
     </main>
-    {/* <ScrollToTop /> */}
     </>
   );
 };

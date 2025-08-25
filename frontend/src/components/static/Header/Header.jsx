@@ -83,7 +83,7 @@ function Header({ setSidebarOpen, sidebarOpen }) {
     "/regular": "Regular Quests",
     "/admin/users": "All Users",
     "/admin/users-details": "Users Details",
-    "/events/sales/:eventId": "Ticket Sales Summary",
+    "/events/sales/:eventId": "Ticket Sales",
     "/events/ticket/:eventId": "View Tickets",
     "/ticket/:ticketId": "Update Ticket",
     "/events/promo-code/:eventId": "Promo Code",
